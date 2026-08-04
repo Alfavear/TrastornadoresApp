@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers/schedule_providers.dart';
 import 'package:intl/intl.dart';
+import '../../../core/widgets/logo_widget.dart';
 
 class ScheduleScreen extends ConsumerWidget {
   const ScheduleScreen({super.key});
@@ -12,7 +13,7 @@ class ScheduleScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mi Disponibilidad'),
+        title: const TrastornadoresHeaderLogo(fontSize: 14), // Logo en letras en el AppBar al iniciar
         centerTitle: true,
       ),
       body: scheduleAsync.when(
@@ -20,7 +21,6 @@ class ScheduleScreen extends ConsumerWidget {
           if (schedules.isEmpty) {
             return const Center(child: Text('No hay cronogramas activos'));
           }
-          // Usamos el cronograma más reciente para el participante
           final currentSchedule = schedules.first;
 
           return ListView.builder(
@@ -33,6 +33,7 @@ class ScheduleScreen extends ConsumerWidget {
               return Card(
                 elevation: 2,
                 margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -41,15 +42,16 @@ class ScheduleScreen extends ConsumerWidget {
                       Text(
                         dateStr.toUpperCase(),
                         style: const TextStyle(
-                          fontSize: 18, 
-                          fontWeight: FontWeight.bold
+                          fontSize: 16, 
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0038A8),
                         ),
                       ),
                       Row(
                         children: [
                           ChoiceChip(
                             label: const Text('Puedo'),
-                            selected: false, // TODO: Bind to user's answer
+                            selected: false,
                             selectedColor: Colors.green.shade200,
                             onSelected: (val) {
                               if (val) {
@@ -63,7 +65,7 @@ class ScheduleScreen extends ConsumerWidget {
                           const SizedBox(width: 8),
                           ChoiceChip(
                             label: const Text('No Puedo'),
-                            selected: false, // TODO: Bind to user's answer
+                            selected: false,
                             selectedColor: Colors.red.shade200,
                             onSelected: (val) {
                               if (val) {

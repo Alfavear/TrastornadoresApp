@@ -71,4 +71,6 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
   - **Azul Rey (`#0038A8`)**: Color primario para barras de navegación, botones principales y headers.
   - **Blanco (`#FFFFFF`) / Gris Claro (`#F8FAFC`)**: Fondos limpios y contraste de lectura.
   - **Dorado / Amarillo (`#FFC107`)**: Acento representativo de la Cruz del logo oficial.
-- **Branding Institucional**: Se integraron los textos oficiales del logo (*"MINISTERIO DE JESÚS - TRASTORNADORES - VISIÓN CONQUISTADORA"*) en la pantalla de bienvenida y el tema global de la aplicación (`main.dart`).
+- **Branding Institucional y Logos**:
+  - **Componente `TrastornadoresBadgeLogo`**: Logo circular sin fondo (transparente) integrado en la pantalla de Login.
+  - **Componente `TrastornadoresHeaderLogo`**: Logo en letras (*"MINISTERIO DE JESÚS - TRASTORNADORES - VISIÓN CONQUISTADORA"*) integrado permanentemente en la barra superior (AppBar) al iniciar la aplicación tanto en la vista de Participante como de Administrador.

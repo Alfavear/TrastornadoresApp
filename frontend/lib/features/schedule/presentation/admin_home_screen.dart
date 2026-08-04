@@ -3,6 +3,7 @@ import 'views/admin_calendar_view.dart';
 import 'views/admin_agenda_view.dart';
 import 'views/admin_matrix_view.dart';
 import 'views/admin_dashboard_view.dart';
+import '../../../core/widgets/logo_widget.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -25,7 +26,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin - Cronograma'),
+        title: const TrastornadoresHeaderLogo(fontSize: 14), // Logo oficial en letras en el AppBar al iniciar
         centerTitle: true,
       ),
       body: _views[_currentIndex],

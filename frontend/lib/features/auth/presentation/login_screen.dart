@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/logo_widget.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
-  static const Color royalBlueDark = Color(0xFF00246B);
+  static const Color royalBlueDark = Color(0xFF001F5C);
   static const Color royalBlue = Color(0xFF0038A8);
   static const Color goldAccent = Color(0xFFFFC107);
 
@@ -20,7 +21,7 @@ class LoginScreen extends ConsumerWidget {
             colors: [
               royalBlueDark,
               royalBlue,
-              Color(0xFF1E50C4),
+              Color(0xFF004FD6),
             ],
           ),
         ),
@@ -31,70 +32,13 @@ class LoginScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Subtitle header
-                  const Text(
-                    'MINISTERIO DE JESÚS',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white70,
-                      letterSpacing: 2.0,
-                    ),
-                  ),
+                  // Logo circular sin fondo (transparente)
+                  const TrastornadoresBadgeLogo(size: 130),
                   const SizedBox(height: 12),
 
-                  // Cross Logo Badge
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.12),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: goldAccent.withOpacity(0.6), width: 2.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.25),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.add, // Represents the Cross
-                      size: 54,
-                      color: goldAccent,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Main Title
-                  const Text(
-                    'TRASTORNADORES',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.black,
-                      color: Colors.white,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: goldAccent,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'VISIÓN CONQUISTADORA',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                        color: royalBlueDark,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
+                  // Header logo en letras
+                  const TrastornadoresHeaderLogo(fontSize: 20),
+                  const SizedBox(height: 36),
 
                   // Login Card
                   Container(
@@ -104,7 +48,7 @@ class LoginScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withOpacity(0.25),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
