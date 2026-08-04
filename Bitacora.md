@@ -74,3 +74,13 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - **Branding Institucional y Logos**:
   - **Componente `TrastornadoresBadgeLogo`**: Logo circular sin fondo (transparente) integrado en la pantalla de Login.
   - **Componente `TrastornadoresHeaderLogo`**: Logo en letras (*"MINISTERIO DE JESÚS - TRASTORNADORES - VISIÓN CONQUISTADORA"*) integrado permanentemente en la barra superior (AppBar) al iniciar la aplicación tanto en la vista de Participante como de Administrador.
+
+### 9. Optimizaciones de Experiencia de Usuario (UX)
+- **Barra de Progreso e Insumos Rápidos para Participantes**:
+  - Incorporación de barra de progreso visual de respuestas mensuales en `ScheduleScreen`.
+  - Botones de acción masiva en 1 toque (*"Marcar todos: PUEDO"*, *"Marcar solo Domingos"*).
+  - Retroalimentación con notificaciones flotantes cálidas (*Toast/Snackbar*).
+- **Herramienta para Administradores (Exportación a WhatsApp)**:
+  - Función de 1 clic en `AdminAgendaView` para copiar al portapapeles el listado de servidores formateado listo para pegar en el grupo de WhatsApp.
+- **Alertas Visuales de Cobertura en Calendario**:
+  - Resaltado automático en naranja y badge de advertencia para fechas con baja cantidad de servidores confirmados (< 2).

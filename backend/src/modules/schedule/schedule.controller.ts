@@ -1,4 +1,5 @@
 import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import type { Request as ExpressRequest } from 'express';
 import { ScheduleService } from './schedule.service';
 import { CreateScheduleDto, RegisterAvailabilityDto } from './dto/schedule.dto';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
@@ -25,10 +26,13 @@ export class ScheduleController {
 
   @Post('availability')
   @ApiOperation({ summary: 'Register user availability for a date' })
-  registerAvailability(@Request() req, @Body() dto: RegisterAvailabilityDto) {
+  registerAvailability(
+    @Request() req: ExpressRequest & { user?: { uid: string } },
+    @Body() dto: RegisterAvailabilityDto,
+  ) {
     // In a real scenario, the userId comes from the DB after syncing the Firebase UID.
     // Assuming the user is already created in the DB and we have their internal ID or we use Firebase UID.
     // We will use the Firebase UID for simplicity in this MVP, but it should map to the User table.
-    return this.scheduleService.registerAvailability(req.user.uid, dto);
+    return this.scheduleService.registerAvailability(req.user!.uid, dto);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/schedule_providers.dart';
 import 'package:intl/intl.dart';
@@ -45,22 +46,22 @@ class AdminAgendaView extends ConsumerWidget {
               child: ExpansionTile(
                 leading: Container(
                   padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF0038A8),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.event_note,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Colors.white,
                   ),
                 ),
                 title: Text(
                   formattedDate.toUpperCase(),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 subtitle: Text(
                   '${availableList.length} confirmados · ${unavailableList.length} ausentes',
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 children: [
                   const Divider(height: 1),
@@ -69,6 +70,32 @@ class AdminAgendaView extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // UX Feature: WhatsApp Export Button per date
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.share, size: 18, color: Colors.green),
+                            label: const Text('Copiar formato para WhatsApp 📲'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.green.shade800,
+                              side: BorderSide(color: Colors.green.shade600),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            onPressed: () {
+                              final textToCopy = _generateWhatsAppText(formattedDate, availableList);
+                              Clipboard.setData(ClipboardData(text: textToCopy));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('¡Formato copiado al portapapeles! Pégalo en WhatsApp.'),
+                                  backgroundColor: Colors.green.shade800,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+
                         const Text(
                           'Confirmados para servir:',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.green),
@@ -87,7 +114,6 @@ class AdminAgendaView extends ConsumerWidget {
                                             child: Icon(Icons.check, size: 14, color: Colors.white),
                                           ),
                                           title: Text(a.user?.name ?? 'Usuario'),
-                                          subtitle: Text(a.user?.email ?? ''),
                                         ))
                                     .toList(),
                               ),
@@ -125,5 +151,20 @@ class AdminAgendaView extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, _) => Center(child: Text('Error al cargar agenda: $err')),
     );
+  }
+
+  String _generateWhatsAppText(String formattedDate, List<dynamic> availableList) {
+    final buffer = StringBuffer();
+    buffer.writeln('🙌 *MINISTERIO DE JESÚS TRASTORNADORES*');
+    buffer.writeln('🗓️ *Equipo confirmado para el ${formattedDate.toUpperCase()}:*\n');
+    if (availableList.isEmpty) {
+      buffer.writeln('_(Aún no hay servidores confirmados)_');
+    } else {
+      for (var i = 0; i < availableList.length; i++) {
+        buffer.writeln('${i + 1}. ${availableList[i].user?.name ?? 'Servidor'}');
+      }
+    }
+    buffer.writeln('\n¡Nos vemos para servir al Señor! 🔥');
+    return buffer.toString();
   }
 }

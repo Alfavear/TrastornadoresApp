@@ -34,24 +34,24 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
               // Header Status Card
               Card(
                 elevation: 0,
-                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+                color: const Color(0xFF0038A8).withOpacity(0.08),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today_rounded, size: 36, color: Colors.indigo),
+                      const Icon(Icons.calendar_month, size: 36, color: Color(0xFF0038A8)),
                       const SizedBox(width: 16),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Cronograma de ${DateFormat('MMMM yyyy', 'es').format(DateTime(currentSchedule.year, currentSchedule.month))}'.toUpperCase(),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0038A8)),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${dates.length} fechas programadas (Jue, Sáb, Dom)',
+                            '${dates.length} fechas activas (Jue, Sáb, Dom)',
                             style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
                           ),
                         ],
@@ -63,12 +63,12 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
               const SizedBox(height: 20),
 
               const Text(
-                'Selecciona una fecha para ver asistentes:',
+                'Selecciona una fecha para ver el equipo:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               const SizedBox(height: 12),
 
-              // Calendar Grid of active dates
+              // Calendar Grid with Low-Availability Alert Visuals
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -85,6 +85,8 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
                   final availableCount = dateItem.availabilities
                       .where((a) => a.status == 'PUEDO')
                       .length;
+                  final isLowAvailability = availableCount < 2; // UX Alert condition
+
                   final dayName = DateFormat('EEE', 'es').format(dateItem.date).toUpperCase();
                   final dayNum = DateFormat('d').format(dateItem.date);
 
@@ -99,53 +101,74 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.6),
+                            ? const Color(0xFF0038A8)
+                            : isLowAvailability
+                                ? Colors.orange.shade50
+                                : Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey.shade300,
+                              ? const Color(0xFF0038A8)
+                              : isLowAvailability
+                                  ? Colors.orange.shade400
+                                  : Colors.grey.shade300,
                           width: 1.5,
                         ),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Text(
-                            dayName,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.white70 : Colors.grey.shade600,
+                          if (isLowAvailability && !isSelected)
+                            const Positioned(
+                              top: 6,
+                              right: 6,
+                              child: Icon(Icons.warning_amber_rounded, size: 16, color: Colors.orange),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            dayNum,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: isSelected ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Colors.white24
-                                  : Colors.green.shade100,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '$availableCount dispo.',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: isSelected ? Colors.white : Colors.green.shade800,
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                dayName,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: isSelected ? Colors.white70 : Colors.grey.shade600,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 2),
+                              Text(
+                                dayNum,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected ? Colors.white : Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? Colors.white24
+                                      : isLowAvailability
+                                          ? Colors.orange.shade100
+                                          : Colors.green.shade100,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '$availableCount dispo.',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : isLowAvailability
+                                            ? Colors.orange.shade900
+                                            : Colors.green.shade800,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -208,7 +231,7 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
                 children: [
                   Text(
                     DateFormat('EEEE d de MMMM', 'es').format(date).toUpperCase(),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0038A8)),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -219,7 +242,6 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
               const Divider(),
               const SizedBox(height: 12),
               
-              // Available Section
               Text(
                 '✅ Disponibles (${availableList.length}):',
                 style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
@@ -239,7 +261,6 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
                     ),
               const SizedBox(height: 16),
 
-              // Unavailable Section
               Text(
                 '❌ No Disponibles (${unavailableList.length}):',
                 style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
