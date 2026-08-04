@@ -38,3 +38,30 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - Se registró la aplicación Android (`com.trastornadores.app`) y se instruyó sobre la descarga del archivo `google-services.json` a la ruta `frontend/android/app/`.
 - Se activó el método de inicio de sesión de Google (Authentication).
 - Se generó y vinculó la clave privada del servicio de administración (`firebase-service-account.json`) directamente al servidor de NestJS.
+
+### 5. Control de Versiones
+- Se inicializó el repositorio local con Git.
+- Se configuró el archivo `.gitignore` para proteger secretos (como las claves de Firebase) y carpetas generadas.
+- Se vinculó el proyecto al repositorio remoto en GitHub (`https://github.com/Alfavear/TrastornadoresApp`) y se empujó (push) el código de la arquitectura base.
+
+### 6. Estructura de Pantallas y Riverpod (Módulo Cronograma)
+- Se generaron los modelos de datos tipados (`ScheduleModel`, `ScheduleDateModel`, `AvailabilityModel`) preparando la estructura para el paquete `freezed`.
+- Se configuró el `ScheduleRepository` para la comunicación con la API del servidor usando **Dio**.
+- Se implementaron los *Providers* de estado global con **Riverpod**.
+- Se construyó la base visual del módulo de Cronograma:
+  - **Participant UI**: Pantalla dinámica que renderiza las fechas disponibles y permite seleccionar "Puedo" / "No Puedo".
+  - **Admin UI**: Estructura de `AdminHomeScreen` con `BottomNavigationBar` anidando las 4 vistas funcionales.
+
+### 7. MVP Funcional de Interfaz de Usuario (UI Completa)
+- **Pantalla de Login (`LoginScreen`)**:
+  - Estilizado moderno con gradientes y tarjetas de sombra elevadas.
+  - Botón de autenticación con Google e integración de navegación con `GoRouter`.
+- **Vista de Calendario (`AdminCalendarView`)**:
+  - Grid interactivo mensual enfocado exclusivamente en Jueves, Sábado y Domingo.
+  - Insignias (badges) de conteo de disponibilidad por fecha y modal desplegable de detalles.
+- **Vista de Agenda (`AdminAgendaView`)**:
+  - Tarjetas expandibles estilo línea de tiempo ordenadas por fecha con avatares de los integrantes.
+- **Vista de Matriz / Excel (`AdminMatrixView`)**:
+  - Tabla de datos con desplazamiento bidireccional, celdas de ✅/❌ y barra de búsqueda en tiempo real por nombre de integrante.
+- **Dashboard Estadístico (`AdminDashboardView`)**:
+  - Tarjetas de métricas (KPIs) con promedio de asistencia, día con mayor convocatoria y función para exportar reportes.
