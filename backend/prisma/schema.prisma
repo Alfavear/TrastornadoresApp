@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  firebaseUid String @unique
+  email     String   @unique
+  name      String
+  photoUrl  String?
+  lastAccess DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  availabilities Availability[]
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  month     Int      // 1 = Jan, 2 = Feb, etc.
+  year      Int
+  isOpen    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dates     ScheduleDate[]
+}
+
+model ScheduleDate {
+  id         String   @id @default(uuid())
+  date       DateTime // The actual date (Thursday, Saturday, Sunday)
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  availabilities Availability[]
+}
+
+model Availability {
+  id             String       @id @default(uuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scheduleDateId String
+  scheduleDate   ScheduleDate @relation(fields: [scheduleDateId], references: [id], onDelete: Cascade)
+  status         AvailabilityStatus
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([userId, scheduleDateId])
+}
+
+enum AvailabilityStatus {
+  PUEDO
+  NO_PUEDO
+}
