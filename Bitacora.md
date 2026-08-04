@@ -65,3 +65,10 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
   - Tabla de datos con desplazamiento bidireccional, celdas de ✅/❌ y barra de búsqueda en tiempo real por nombre de integrante.
 - **Dashboard Estadístico (`AdminDashboardView`)**:
   - Tarjetas de métricas (KPIs) con promedio de asistencia, día con mayor convocatoria y función para exportar reportes.
+
+### 8. Identidad Visual y Colores Oficiales del Ministerio
+- **Paleta de Colores Institucionales Integrada**:
+  - **Azul Rey (`#0038A8`)**: Color primario para barras de navegación, botones principales y headers.
+  - **Blanco (`#FFFFFF`) / Gris Claro (`#F8FAFC`)**: Fondos limpios y contraste de lectura.
+  - **Dorado / Amarillo (`#FFC107`)**: Acento representativo de la Cruz del logo oficial.
+- **Branding Institucional**: Se integraron los textos oficiales del logo (*"MINISTERIO DE JESÚS - TRASTORNADORES - VISIÓN CONQUISTADORA"*) en la pantalla de bienvenida y el tema global de la aplicación (`main.dart`).

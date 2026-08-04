@@ -5,20 +5,22 @@ import 'package:go_router/go_router.dart';
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
+  static const Color royalBlueDark = Color(0xFF00246B);
+  static const Color royalBlue = Color(0xFF0038A8);
+  static const Color goldAccent = Color(0xFFFFC107);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF1E1E2C),
-              const Color(0xFF2D2B55),
-              theme.colorScheme.primaryContainer,
+              royalBlueDark,
+              royalBlue,
+              Color(0xFF1E50C4),
             ],
           ),
         ),
@@ -29,59 +31,84 @@ class LoginScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo / Icon Badge
+                  // Subtitle header
+                  const Text(
+                    'MINISTERIO DE JESÚS',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white70,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Cross Logo Badge
                   Container(
-                    width: 100,
-                    height: 100,
+                    width: 90,
+                    height: 90,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withOpacity(0.12),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white30, width: 2),
+                      border: Border.all(color: goldAccent.withOpacity(0.6), width: 2.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: Colors.black.withOpacity(0.25),
+                          blurRadius: 16,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: const Icon(
-                      Icons.church_rounded,
-                      size: 52,
-                      color: Colors.amber,
+                      Icons.add, // Represents the Cross
+                      size: 54,
+                      color: goldAccent,
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
 
-                  // App Title
+                  // Main Title
                   const Text(
-                    'TrastornadoresApp',
+                    'TRASTORNADORES',
                     style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.extrabold,
+                      fontSize: 30,
+                      fontWeight: FontWeight.black,
                       color: Colors.white,
-                      letterSpacing: 1.1,
+                      letterSpacing: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Plataforma de Gestión Ministerial',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withOpacity(0.8),
-                      fontWeight: FontWeight.w400,
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: goldAccent,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'VISIÓN CONQUISTADORA',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        color: royalBlueDark,
+                        letterSpacing: 1.2,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 40),
 
                   // Login Card
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.08),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.15)),
-                      backdropFilter: null, // Keep UI clean & compatible
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
@@ -90,16 +117,16 @@ class LoginScreen extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: royalBlueDark,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Ingresa con tu cuenta institucional para acceder al cronograma de disponibilidad.',
+                          'Ingresa con tu cuenta para acceder al cronograma de disponibilidad.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.grey.shade700,
                             height: 1.4,
                           ),
                         ),
@@ -108,36 +135,42 @@ class LoginScreen extends ConsumerWidget {
                         // Google Sign-In Button
                         SizedBox(
                           width: double.infinity,
-                          height: 54,
+                          height: 52,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black87,
-                              elevation: 4,
+                              backgroundColor: royalBlue,
+                              foregroundColor: Colors.white,
+                              elevation: 2,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
                             onPressed: () {
-                              // Direct navigation for demo / MVP flow
                               context.go('/schedule');
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Image.network(
-                                  'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
-                                  height: 24,
-                                  width: 24,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.g_mobiledata, size: 28, color: Colors.blue),
+                                Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Image.network(
+                                    'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
+                                    height: 18,
+                                    width: 18,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        const Icon(Icons.g_mobiledata, size: 20, color: royalBlue),
+                                  ),
                                 ),
                                 const SizedBox(width: 12),
                                 const Text(
                                   'Continuar con Google',
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
                                     letterSpacing: 0.2,
                                   ),
                                 ),
@@ -147,14 +180,14 @@ class LoginScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 16),
                         
-                        // Admin Shortcut Button for quick testing
+                        // Admin Shortcut Button
                         TextButton(
                           onPressed: () => context.go('/admin'),
                           child: const Text(
                             'Acceso Administrador (Demo)',
                             style: TextStyle(
-                              color: Colors.amberAccent,
-                              fontWeight: FontWeight.w500,
+                              color: royalBlue,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -162,11 +195,11 @@ class LoginScreen extends ConsumerWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 36),
                   Text(
-                    '© Trastornadores Movimiento 2026',
+                    '© Ministerio de Jesús Trastornadores 2026',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withOpacity(0.6),
                       fontSize: 12,
                     ),
                   ),
