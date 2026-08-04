@@ -4,10 +4,6 @@ import { AuthModule } from './core/auth/auth.module';
 import { ScheduleModule } from './modules/schedule/schedule.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    AuthModule,
-    ScheduleModule,
-  ],
+  imports: [PrismaModule, AuthModule, ScheduleModule],
 })
 export class AppModule {}

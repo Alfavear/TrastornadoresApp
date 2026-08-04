@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import type { Request as ExpressRequest } from 'express';
 import { ScheduleService } from './schedule.service';
 import { CreateScheduleDto, RegisterAvailabilityDto } from './dto/schedule.dto';

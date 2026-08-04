@@ -43,6 +43,24 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - Se inicializó el repositorio local con Git.
 - Se configuró el archivo `.gitignore` para proteger secretos (como las claves de Firebase) y carpetas generadas.
 - Se vinculó el proyecto al repositorio remoto en GitHub (`https://github.com/Alfavear/TrastornadoresApp`) y se empujó (push) el código de la arquitectura base.
+- Se agregó el archivo `.agents/AGENTS.md` con el contexto y reglas para agentes de IA (obliga a leer `Bitacora.md` antes de proponer cambios).
+
+### 6. Validación y Correcciones del Backend
+- Se instalaron las dependencias faltantes en `backend/package.json`: `@nestjs/swagger`, `class-validator`, `class-transformer`, `firebase-admin`, `@prisma/client` y `prisma` (esta última como `devDependency`).
+- Se generó el cliente Prisma con `npx prisma generate` (Prisma v6.19.3).
+- Se fortaleció la validación de `RegisterAvailabilityDto`:
+  - `scheduleDateId` ahora valida `@IsString()` y `@IsUUID()`.
+  - `status` ahora valida `@IsIn(['PUEDO', 'NO_PUEDO'])`.
+- Se refactorizó `main.ts` para eliminar el `require()` inseguro; ahora lee `firebase-service-account.json` con `fs.readFileSync` + `JSON.parse` tipado con `admin.ServiceAccount`.
+- Se tipó correctamente `FirebaseAuthGuard` (tipado del `AuthenticatedRequest`, sin imports no usados ni llamadas a `any`).
+- Se tipó el parámetro `@Request()` del controlador de Schedule con la interfaz `AuthenticatedRequest`.
+- Se limpiaron imports y casts innecesarios en `schedule.service.ts` y se corrigió el manejo de promesas en los shutdown hooks de `prisma.service.ts`.
+- **Verificación:** `npm run build` compila sin errores, `npm run lint` pasa con 0 errores y los tests unitarios pasan (1/1).
+
+### 7. Pendientes del Frontend
+- Instalar/validar Flutter con la versión del SDK configurada en `pubspec.yaml` (`>=3.3.0 <4.0.0`).
+- Ejecutar `dart run build_runner build --delete-conflicting-outputs` para generar los archivos `schedule_model.freezed.dart` y `schedule_model.g.dart` requeridos por los modelos Freezed/JSON.
+- Vincular la capa de datos al backend real (base URL `http://localhost:3000` configurada en `dioProvider`) y descomentar la inicialización de Firebase en `main.dart`.
 
 ### 6. Estructura de Pantallas y Riverpod (Módulo Cronograma)
 - Se generaron los modelos de datos tipados (`ScheduleModel`, `ScheduleDateModel`, `AvailabilityModel`) preparando la estructura para el paquete `freezed`.

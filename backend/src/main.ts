@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import * as fs from 'fs';
 import * as path from 'path';
 
 async function bootstrap() {
@@ -10,13 +11,22 @@ async function bootstrap() {
 
   // Initialize Firebase Admin
   try {
-    const serviceAccount = require(path.join(__dirname, '..', 'firebase-service-account.json'));
+    const serviceAccountPath = path.join(
+      __dirname,
+      '..',
+      'firebase-service-account.json',
+    );
+    const serviceAccount = JSON.parse(
+      fs.readFileSync(serviceAccountPath, 'utf-8'),
+    ) as admin.ServiceAccount;
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
     console.log('Firebase Admin initialized successfully');
-  } catch (error) {
-    console.warn('Could not initialize Firebase Admin (Check firebase-service-account.json)');
+  } catch {
+    console.warn(
+      'Could not initialize Firebase Admin (Check firebase-service-account.json)',
+    );
   }
 
   app.enableCors();
@@ -28,11 +38,11 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-    
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
-bootstrap();
+void bootstrap();

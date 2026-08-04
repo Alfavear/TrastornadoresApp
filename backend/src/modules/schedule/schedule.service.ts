@@ -1,7 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../core/prisma/prisma.service';
 import { CreateScheduleDto, RegisterAvailabilityDto } from './dto/schedule.dto';
-import { AvailabilityStatus } from '@prisma/client';
 
 @Injectable()
 export class ScheduleService {
@@ -9,30 +8,32 @@ export class ScheduleService {
 
   async createSchedule(dto: CreateScheduleDto) {
     const { month, year } = dto;
-    
+
     // Check if schedule already exists
     const existing = await this.prisma.schedule.findFirst({
-      where: { month, year }
+      where: { month, year },
     });
-    
+
     if (existing) {
-      throw new BadRequestException('Schedule for this month and year already exists.');
+      throw new BadRequestException(
+        'Schedule for this month and year already exists.',
+      );
     }
 
     // Generate Thursdays, Saturdays, and Sundays for the given month and year
     const dates = this.generateTargetDays(year, month);
-    
+
     const schedule = await this.prisma.schedule.create({
       data: {
         month,
         year,
         dates: {
-          create: dates.map(date => ({ date })),
-        }
+          create: dates.map((date) => ({ date })),
+        },
       },
       include: {
         dates: true,
-      }
+      },
     });
 
     // TODO: Send automatic email about new schedule
@@ -47,11 +48,11 @@ export class ScheduleService {
         dates: {
           include: {
             availabilities: {
-              include: { user: true }
-            }
-          }
-        }
-      }
+              include: { user: true },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -61,16 +62,16 @@ export class ScheduleService {
         userId_scheduleDateId: {
           userId,
           scheduleDateId: dto.scheduleDateId,
-        }
+        },
       },
       update: {
-        status: dto.status as AvailabilityStatus
+        status: dto.status,
       },
       create: {
         userId,
         scheduleDateId: dto.scheduleDateId,
-        status: dto.status as AvailabilityStatus
-      }
+        status: dto.status,
+      },
     });
   }
 
