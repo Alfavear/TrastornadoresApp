@@ -63,4 +63,20 @@ class ScheduleRepository {
       throw Exception('Failed to update schedule status: $e');
     }
   }
+
+  Future<void> notifyGroup(String dateId) async {
+    try {
+      await _dio.post('/schedule/notify/group/$dateId');
+    } catch (e) {
+      throw Exception('Failed to send group notification: $e');
+    }
+  }
+
+  Future<void> notifyReminder(String dateId, String userId) async {
+    try {
+      await _dio.post('/schedule/notify/reminder/$dateId/$userId');
+    } catch (e) {
+      throw Exception('Failed to send reminder: $e');
+    }
+  }
 }

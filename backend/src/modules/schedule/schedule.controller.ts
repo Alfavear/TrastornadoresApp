@@ -71,4 +71,23 @@ export class ScheduleController {
   ) {
     return this.scheduleService.registerAvailability(req.user, dto);
   }
+
+  @Post('notify/group/:dateId')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Enviar recordatorio a todos los que sirven en la fecha (Admin)' })
+  @ApiOkResponse({ description: 'Notificaciones enviadas' })
+  notifyGroup(@Param('dateId') dateId: string) {
+    return this.scheduleService.notifyGroup(dateId);
+  }
+
+  @Post('notify/reminder/:dateId/:userId')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Enviar recordatorio individual a un usuario para una fecha (Admin)' })
+  @ApiOkResponse({ description: 'Notificación enviada' })
+  notifyReminder(
+    @Param('dateId') dateId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.scheduleService.notifyReminder(userId, dateId);
+  }
 }

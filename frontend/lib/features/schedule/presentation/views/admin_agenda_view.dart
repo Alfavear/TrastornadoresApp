@@ -36,12 +36,12 @@ class AdminAgendaView extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: const Color(0xFF001F5C).withOpacity(0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: const Color(0xFFE0E3E5)),
               ),
               child: ExpansionTile(
                 leading: Container(
@@ -57,7 +57,7 @@ class AdminAgendaView extends ConsumerWidget {
                 ),
                 title: Text(
                   formattedDate.toUpperCase(),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF001F5C)),
                 ),
                 subtitle: Text(
                   '${availableList.length} confirmados · ${unavailableList.length} ausentes',
@@ -70,29 +70,59 @@ class AdminAgendaView extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // UX Feature: WhatsApp Export Button per date
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            icon: const Icon(Icons.share, size: 18, color: Colors.green),
-                            label: const Text('Copiar formato para WhatsApp 📲'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.green.shade800,
-                              side: BorderSide(color: Colors.green.shade600),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            onPressed: () {
-                              final textToCopy = _generateWhatsAppText(formattedDate, availableList);
-                              Clipboard.setData(ClipboardData(text: textToCopy));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('¡Formato copiado al portapapeles! Pégalo en WhatsApp.'),
-                                  backgroundColor: Colors.green.shade800,
-                                  behavior: SnackBarBehavior.floating,
+                        // Acciones WhatsApp Directas
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                icon: const Icon(Icons.send, size: 16),
+                                label: const Text('Enviar Alerta a WhatsApp 📲', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green.shade700,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 ),
-                              );
-                            },
-                          ),
+                                onPressed: () async {
+                                  try {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Enviando alertas automáticas...')),
+                                    );
+                                    await ref.read(scheduleRepositoryProvider).notifyGroup(dateItem.id);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('¡Alertas enviadas exitosamente desde el servidor!'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error al enviar alertas: $e'), backgroundColor: Colors.red),
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(Icons.copy, color: Color(0xFF0038A8)),
+                              tooltip: 'Copiar texto',
+                              onPressed: () {
+                                final confirmedNames = availableList.map((a) => a.user?.name ?? 'Servidor').toList();
+                                final text = _generateWhatsAppText(formattedDate, confirmedNames);
+                                Clipboard.setData(ClipboardData(text: text));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('¡Texto de WhatsApp copiado al portapapeles!'),
+                                    backgroundColor: Color(0xFF0038A8),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 14),
 
@@ -104,18 +134,47 @@ class AdminAgendaView extends ConsumerWidget {
                         availableList.isEmpty
                             ? const Text('Ningún voluntario anotado', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey))
                             : Column(
-                                children: availableList
-                                    .map((a) => ListTile(
-                                          dense: true,
-                                          contentPadding: EdgeInsets.zero,
-                                          leading: const CircleAvatar(
-                                            radius: 14,
-                                            backgroundColor: Colors.green,
-                                            child: Icon(Icons.check, size: 14, color: Colors.white),
-                                          ),
-                                          title: Text(a.user?.name ?? 'Usuario'),
-                                        ))
-                                    .toList(),
+                                children: availableList.map((a) {
+                                  final userName = a.user?.name ?? 'Servidor';
+                                  final userPhone = a.user?.email.contains('@') == false ? a.user?.email : null;
+
+                                  return ListTile(
+                                    dense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                    leading: const CircleAvatar(
+                                      radius: 14,
+                                      backgroundColor: Colors.green,
+                                      child: Icon(Icons.check, size: 14, color: Colors.white),
+                                    ),
+                                    title: Text(userName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.mark_chat_unread_outlined, color: Colors.green, size: 20),
+                                      tooltip: 'Enviar Recordatorio WhatsApp',
+                                      onPressed: () async {
+                                        try {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Enviando recordatorio a $userName...')),
+                                          );
+                                          await ref.read(scheduleRepositoryProvider).notifyReminder(dateItem.id, a.user!.id);
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('¡Recordatorio enviado exitosamente!'),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+                                            );
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                         const SizedBox(height: 12),
                         const Text(
@@ -153,15 +212,15 @@ class AdminAgendaView extends ConsumerWidget {
     );
   }
 
-  String _generateWhatsAppText(String formattedDate, List<dynamic> availableList) {
+  String _generateWhatsAppText(String formattedDate, List<String> availableList) {
     final buffer = StringBuffer();
-    buffer.writeln('🙌 *MINISTERIO DE JESÚS TRASTORNADORES*');
+    buffer.writeln('🙌 *MINISTERIO DE JESÚS TRASTORNADORES* ✝️');
     buffer.writeln('🗓️ *Equipo confirmado para el ${formattedDate.toUpperCase()}:*\n');
     if (availableList.isEmpty) {
       buffer.writeln('_(Aún no hay servidores confirmados)_');
     } else {
       for (var i = 0; i < availableList.length; i++) {
-        buffer.writeln('${i + 1}. ${availableList[i].user?.name ?? 'Servidor'}');
+        buffer.writeln('${i + 1}. ${availableList[i]}');
       }
     }
     buffer.writeln('\n¡Nos vemos para servir al Señor! 🔥');

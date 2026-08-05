@@ -12,6 +12,7 @@ model User {
   firebaseUid String @unique
   email     String   @unique
   name      String
+  phone     String?
   photoUrl  String?
   role      UserRole @default(PARTICIPANT)
   lastAccess DateTime @default(now())

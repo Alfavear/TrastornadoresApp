@@ -95,7 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ButtonSegment<int>(
                             value: 0,
                             label: Text('Google', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                            icon: Icon(Icons.g_mobiledata, size: 18),
+                            icon: Icon(Icons.account_circle, size: 18),
                           ),
                           ButtonSegment<int>(
                             value: 1,
@@ -168,7 +168,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  // Vista Método 0: Google Sign-In
+  // Vista Método 0: Google Sign-In con Icono confiable
   Widget _buildGoogleAuthView() {
     return Column(
       children: [
@@ -189,13 +189,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             onPressed: () {
-              ref.read(currentUserProvider.notifier).state = UserProfile(
+              final partialProfile = UserProfile(
                 id: 'servidor-google-123',
                 name: 'Servidor Trastornador',
                 email: 'servidor@trastornadores.org',
                 role: 'PARTICIPANT',
               );
-              context.go('/schedule');
+              _promptForPhoneNumber(partialProfile);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -204,7 +204,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
                   child: Image.network(
-                    'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
+                    'https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png',
                     height: 18,
                     width: 18,
                     errorBuilder: (context, error, stackTrace) =>
@@ -221,7 +221,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  // Vista Método 1: Número de Teléfono y Nombre Únicamente
   Widget _buildPhoneAuthView() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,7 +268,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ref.read(currentUserProvider.notifier).state = UserProfile(
                 id: 'phone-${phone.replaceAll(' ', '')}',
                 name: name,
-                email: '$phone@trastornadores.org',
+                email: '${phone.replaceAll(' ', '')}@trastornadores.org',
+                phone: phone,
                 role: 'PARTICIPANT',
               );
               context.go('/schedule');
@@ -280,7 +280,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  // Vista Método 2: Correo Electrónico y Contraseña
   Widget _buildEmailAuthView() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,17 +323,87 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   : 'servidor@trastornadores.org';
               final name = email.contains('@') ? email.split('@').first : 'Servidor';
 
-              ref.read(currentUserProvider.notifier).state = UserProfile(
+              final partialProfile = UserProfile(
                 id: 'email-${email.hashCode}',
                 name: name.toUpperCase(),
                 email: email,
                 role: 'PARTICIPANT',
               );
-              context.go('/schedule');
+              _promptForPhoneNumber(partialProfile);
             },
           ),
         ),
       ],
     );
   }
+
+  void _promptForPhoneNumber(UserProfile partialProfile) {
+    final phoneController = TextEditingController();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            'Completa tu Perfil',
+            style: TextStyle(color: royalBlueDark, fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Para enviarte alertas automáticas necesitamos tu número de WhatsApp.',
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'Número (Ej. +57 300...)',
+                  prefixIcon: const Icon(Icons.chat, color: Colors.green),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: royalBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () {
+                final phone = phoneController.text.trim();
+                if (phone.isEmpty) return;
+
+                // Actualizar profile con teléfono
+                final completeProfile = UserProfile(
+                  id: partialProfile.id,
+                  name: partialProfile.name,
+                  email: partialProfile.email,
+                  phone: phone,
+                  photoUrl: partialProfile.photoUrl,
+                  role: partialProfile.role,
+                );
+
+                Navigator.pop(context);
+                ref.read(currentUserProvider.notifier).state = completeProfile;
+                context.go('/schedule');
+              },
+              child: const Text('Continuar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
+

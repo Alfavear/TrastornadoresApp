@@ -8,12 +8,14 @@ import { PrismaService } from '../../core/prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { AuthUser } from '../../core/auth/types/auth.types';
 import { CreateScheduleDto, RegisterAvailabilityDto } from './dto/schedule.dto';
+import { WhatsappService } from '../notifications/whatsapp.service';
 
 @Injectable()
 export class ScheduleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
+    private readonly whatsappService: WhatsappService,
   ) {}
 
   async createSchedule(dto: CreateScheduleDto) {
@@ -127,5 +129,75 @@ export class ScheduleService {
       date.setDate(date.getDate() + 1);
     }
     return dates;
+  }
+
+  async notifyGroup(dateId: string) {
+    const scheduleDate = await this.prisma.scheduleDate.findUnique({
+      where: { id: dateId },
+      include: {
+        availabilities: {
+          where: { status: 'PUEDO' },
+          include: { user: true },
+        },
+      },
+    });
+
+    if (!scheduleDate) {
+      throw new NotFoundException('Fecha de cronograma no encontrada');
+    }
+
+    const formatter = new Intl.DateTimeFormat('es-ES', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+    const dateStr = formatter.format(scheduleDate.date);
+    
+    // Lista de usuarios que van a servir ese día
+    const participants = scheduleDate.availabilities.map(a => a.user.name).join(', ');
+
+    let notificationsSent = 0;
+    
+    // Enviar a cada uno de los confirmados
+    for (const availability of scheduleDate.availabilities) {
+      const user = availability.user;
+      if (user.phone) {
+        const message = `¡Hola ${user.name}!\n\nEste es un recordatorio automático.\nSirves en Trastornadores el día:\n📅 *${dateStr}*\n\nJunto a: ${participants}\n\nPor favor llega 30 minutos antes. Bendiciones.`;
+        await this.whatsappService.sendMessage(user.phone, message);
+        notificationsSent++;
+      }
+    }
+
+    return {
+      message: `Se enviaron ${notificationsSent} notificaciones automáticas exitosamente.`,
+      sentCount: notificationsSent,
+    };
+  }
+
+  async notifyReminder(userId: string, dateId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+    if (!user.phone) throw new BadRequestException('El usuario no tiene un número de teléfono registrado');
+
+    const scheduleDate = await this.prisma.scheduleDate.findUnique({
+      where: { id: dateId }
+    });
+    
+    if (!scheduleDate) throw new NotFoundException('Fecha no encontrada');
+
+    const formatter = new Intl.DateTimeFormat('es-ES', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+    const dateStr = formatter.format(scheduleDate.date);
+    
+    const message = `¡Hola ${user.name}!\n\nTe recordamos que tienes el privilegio de servir el día:\n📅 *${dateStr}*\n\nPor favor, confirma tu asistencia en la aplicación si aún no lo has hecho.`;
+    
+    await this.whatsappService.sendMessage(user.phone, message);
+    
+    return {
+      message: `Recordatorio enviado exitosamente a ${user.name}`,
+    };
   }
 }

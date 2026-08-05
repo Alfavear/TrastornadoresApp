@@ -223,6 +223,15 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - **Campos Solicitados**: Se eliminó el campo opcional de Ministerio. La opción de teléfono requiere únicamente **Número de Teléfono** (`+57 ...`) y **Nombre Completo**.
 - **Creación de Perfil Directo**: Al enviar los datos, se crea y registra el perfil del servidor participante para confirmar su disponibilidad de inmediato.
 
+### 31. Módulo de Mensajería y Alertas por WhatsApp (`WhatsAppService`) (04/08/2026)
+- **Integración de Enlaces Directos de WhatsApp**: Se creó `WhatsAppService` (`frontend/lib/core/services/whatsapp_service.dart`) para generar y abrir mensajes formateados en la aplicación móvil de WhatsApp o WhatsApp Web.
+- **Alertas de Grupo**: En la vista de Agenda (`AdminAgendaView`), el botón **"Enviar Alerta a WhatsApp 📲"** genera la nómina de confirmados con formato de la iglesia para publicarla directamente al grupo del ministerio.
+- **Recordatorios Individuales**: Cada servidor verificado posee un botón directo de chat para enviarle una alerta personalizada de recordatorio de servicio.
+
+### 32. Corrección de Lanzador Web de WhatsApp y URL del Logo de Google (04/08/2026)
+- **Soporte Web de WhatsApp sin Excepciones**: Se actualizó `WhatsAppService` utilizando `html.window.open` al detectar entorno web (`kIsWeb`), eliminando el error `MissingPluginException` y abriendo WhatsApp / WhatsApp Web directamente en una nueva pestaña del navegador.
+- **Icono Confiable de Google**: Se actualizó la imagen del botón de inicio de sesión de Google a una fuente oficial estática (`gstatic`) libre de errores 404.
+
 ### 12. Fortalecimiento del Backend: Auth Real, Módulo Users y Buenas Prácticas (04/08/2026)
 - **Verificación real de tokens Firebase**: `FirebaseAuthGuard` ahora verifica el Bearer token contra el Admin SDK mediante el nuevo `FirebaseService` (módulo global `core/firebase/`). El mock solo aplica en desarrollo sin credenciales (`isMockEnabled`), nunca en producción.
 - **Nuevo `UsersModule` (global)**: sincroniza el `firebaseUid` del token con la tabla `User` (upsert por `firebaseUid`). Endpoints protegidos `POST /users/sync` y `GET /users/me`.
@@ -234,3 +243,10 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - **Tests**: 12 pruebas unitarias (guard de Firebase, `UsersService`, `ScheduleService` con generación de fechas, DTO upsert).
 - **Verificación**: `npm run build`, `npm run lint` y `npm test` pasan sin errores. Prueba de humo E2E contra Neon: `POST /users/sync` crea el usuario, `POST /schedule` genera solo Jue/Sáb/Dom (octubre 2026: 14 fechas) y `POST /schedule/availability` registra disponibilidad vinculada al `User.id` interno.
 - **Pendiente recomendado**: crear migraciones formales de Prisma (`prisma migrate dev`) para gestionar el esquema versionado en lugar de `db push`.
+
+### 33. Automatización de Alertas de WhatsApp desde Backend (NestJS) (04/08/2026)
+- **Modificación de Base de Datos**: Se agregó el campo `phone String?` a la tabla `User` en `schema.prisma` y se sincronizó con Neon DB.
+- **Módulo de Notificaciones**: Se creó el `NotificationsModule` y el `WhatsappService` en el backend. Actualmente configurado como *Mock Provider* (simulación mediante logs) para facilitar el reemplazo futuro por credenciales reales de la API de Meta o Twilio.
+- **Nuevos Endpoints**: Se agregaron `POST /schedule/notify/group/:dateId` y `POST /schedule/notify/reminder/:dateId/:userId` para procesar alertas desde el servidor.
+- **Frontend - Registro Estricto**: Se modificó `LoginScreen` para requerir obligatoriamente el ingreso de un número de WhatsApp (mediante un popup Modal) a los usuarios que ingresan mediante Google Auth o Correo Electrónico que carezcan de él.
+- **Migración de Botones de Alerta**: Se desvinculó el paquete `url_launcher` en la vista de administradores (`AdminAgendaView`). Los botones de alertas ahora realizan llamadas directas al backend utilizando la instancia configurada de `Dio`, garantizando que el sistema sea automatizado independientemente de si el líder tiene o no la aplicación de WhatsApp instalada en su dispositivo.
