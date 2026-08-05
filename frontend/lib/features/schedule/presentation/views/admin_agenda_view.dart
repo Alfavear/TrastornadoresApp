@@ -25,7 +25,7 @@ class AdminAgendaView extends ConsumerWidget {
           itemCount: dates.length,
           itemBuilder: (context, index) {
             final dateItem = dates[index];
-            final formattedDate = DateFormat('EEEE d de MMMM', 'es').format(dateItem.date);
+            final formattedDate = DateFormat("EEEE d 'de' MMMM", 'es').format(dateItem.date);
             final availableList = dateItem.availabilities.where((a) => a.status == 'PUEDO').toList();
             final unavailableList = dateItem.availabilities.where((a) => a.status == 'NO_PUEDO').toList();
 

@@ -1,12 +1,23 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/schedule/presentation/admin_home_screen.dart';
 import '../../features/schedule/presentation/schedule_screen.dart';
+
+import '../../features/auth/presentation/providers/user_provider.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/login',
+    redirect: (context, state) {
+      final user = ref.read(currentUserProvider);
+      final isGoingToAdmin = state.matchedLocation == '/admin';
+
+      if (isGoingToAdmin && user.role != 'ADMIN') {
+        return '/schedule';
+      }
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/login',
@@ -16,7 +27,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/schedule',
         builder: (context, state) => const ScheduleScreen(),
       ),
+      GoRoute(
+        path: '/admin',
+        builder: (context, state) => const AdminHomeScreen(),
+      ),
     ],
-    // TODO: Add redirect logic based on auth state
   );
 });

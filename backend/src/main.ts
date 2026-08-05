@@ -2,35 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import * as admin from 'firebase-admin';
-import * as fs from 'fs';
-import * as path from 'path';
+import { PrismaService } from './core/prisma/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Initialize Firebase Admin
-  try {
-    const serviceAccountPath = path.join(
-      __dirname,
-      '..',
-      'firebase-service-account.json',
-    );
-    const serviceAccount = JSON.parse(
-      fs.readFileSync(serviceAccountPath, 'utf-8'),
-    ) as admin.ServiceAccount;
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    console.log('Firebase Admin initialized successfully');
-  } catch {
-    console.warn(
-      'Could not initialize Firebase Admin (Check firebase-service-account.json)',
-    );
-  }
+  const port = parseInt(process.env.PORT ?? '3000', 10);
 
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  const prismaService = app.get(PrismaService);
+  prismaService.enableShutdownHooks(app);
 
   const config = new DocumentBuilder()
     .setTitle('TrastornadoresApp API')
@@ -42,7 +25,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(3000);
+  await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 void bootstrap();

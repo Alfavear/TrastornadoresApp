@@ -13,6 +13,7 @@ model User {
   email     String   @unique
   name      String
   photoUrl  String?
+  role      UserRole @default(PARTICIPANT)
   lastAccess DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,4 +58,9 @@ model Availability {
 enum AvailabilityStatus {
   PUEDO
   NO_PUEDO
+}
+
+enum UserRole {
+  ADMIN
+  PARTICIPANT
 }

@@ -5,6 +5,9 @@ Este archivo contiene el contexto general, las reglas de arquitectura y la visi�
 ## 📌 Directiva Crítica
 **Antes de proponer cambios arquitectónicos o implementar nuevas funcionalidades, el agente DEBE leer obligatoriamente el archivo `Bitacora.md` en la raíz del proyecto.** La bitácora contiene el registro histórico exacto de lo que ya está implementado.
 
+## 🔧 Contexto de opencode
+Para conocer la configuración de opencode de este proyecto (MCP servers, reglas de sesión, estructura), leer el archivo `OPENCODE.md` en la raíz del proyecto.
+
 ## 📖 Visión del Proyecto
 TrastornadoresApp es una plataforma moderna diseñada para apoyar la organización, coordinación y administración de los diferentes ministerios y actividades del movimiento Trastornadores. 
 - **Enfoque:** Modular y escalable.

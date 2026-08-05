@@ -230,7 +230,7 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    DateFormat('EEEE d de MMMM', 'es').format(date).toUpperCase(),
+                    DateFormat("EEEE d 'de' MMMM", 'es').format(date).toUpperCase(),
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0038A8)),
                   ),
                   IconButton(

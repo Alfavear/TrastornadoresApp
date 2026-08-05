@@ -4,35 +4,65 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import type { Request } from 'express';
+import { UserRole } from '@prisma/client';
+import { FirebaseService } from '../firebase/firebase.service';
+import { UsersService } from '../../modules/users/users.service';
+import { AuthenticatedRequest } from './types/auth.types';
 
-interface AuthenticatedRequest extends Request {
-  user?: { uid: string; email?: string; name?: string };
-}
+const MOCK_USER = {
+  uid: 'mock-uid-123',
+  email: 'mockuser@test.com',
+  name: 'Mock User',
+};
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
+  constructor(
+    private readonly firebaseService: FirebaseService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException(
-        'Missing or invalid authorization header',
+        'Falta o es inválido el header de autorización',
       );
     }
 
-    // En un entorno real se verifica el token contra el Admin SDK de Firebase:
-    // const decodedToken = await admin.auth().verifyIdToken(token);
-    // request.user = decodedToken;
+    const token = authHeader.split(' ')[1];
 
-    // Mock user para el desarrollo sin credenciales válidas
-    request.user = {
-      uid: 'mock-uid-123',
-      email: 'mockuser@test.com',
-      name: 'Mock User',
-    };
+    try {
+      const decodedToken = await this.firebaseService.verifyIdToken(token);
+      const dbUser = await this.usersService.findByFirebaseUid(
+        decodedToken.uid,
+      );
 
-    return true;
+      request.user = {
+        uid: decodedToken.uid,
+        email: decodedToken.email ?? dbUser?.email ?? undefined,
+        name: decodedToken.name ?? dbUser?.name ?? undefined,
+        photoUrl: decodedToken.picture ?? dbUser?.photoUrl ?? undefined,
+        role:
+          (dbUser?.role ?? this.usersService.isBootstrapAdmin(decodedToken.uid))
+            ? UserRole.ADMIN
+            : UserRole.PARTICIPANT,
+      };
+      return true;
+    } catch {
+      if (!this.firebaseService.isMockEnabled) {
+        throw new UnauthorizedException('Token inválido o expirado');
+      }
+      // Modo desarrollo: sin credenciales de Firebase se usa un mock.
+      request.user = {
+        ...MOCK_USER,
+        role: this.usersService.isBootstrapAdmin(MOCK_USER.uid)
+          ? UserRole.ADMIN
+          : UserRole.PARTICIPANT,
+      };
+      return true;
+    }
   }
 }

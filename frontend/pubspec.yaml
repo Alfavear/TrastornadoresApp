@@ -19,14 +19,19 @@ dependencies:
   firebase_auth: ^4.17.8
   responsive_framework: ^1.1.1
   fl_chart: ^0.66.2
+  intl: ^0.20.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.8
   freezed: ^2.4.1
-  json_serializable: ^8.0.0
+  json_serializable: ^6.9.5
   flutter_lints: ^3.0.0
+  mocktail: ^1.0.5
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
+

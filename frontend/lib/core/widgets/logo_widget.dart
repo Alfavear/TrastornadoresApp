@@ -11,15 +11,18 @@ class TrastornadoresHeaderLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Golden Cross Graphic
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Icon(Icons.add, size: fontSize * 1.6, color: const Color(0xFFFFC107)),
-            Icon(Icons.add, size: fontSize * 1.4, color: Colors.amberAccent),
-          ],
+        Image.asset(
+          'assets/images/logo.png',
+          height: fontSize * 2.2,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => Image.network(
+            'assets/logo.png',
+            height: fontSize * 2.2,
+            errorBuilder: (context, error, stackTrace) =>
+                Icon(Icons.church, size: fontSize * 1.6, color: const Color(0xFFFFC107)),
+          ),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 8),
         Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,53 +67,49 @@ class TrastornadoresHeaderLogo extends StatelessWidget {
 class TrastornadoresBadgeLogo extends StatelessWidget {
   final double size;
 
-  const TrastornadoresBadgeLogo({super.key, this.size = 120});
+  const TrastornadoresBadgeLogo({super.key, this.size = 270});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: size,
-      height: size,
-      padding: const EdgeInsets.all(8),
-      decoration: const BoxDecoration(
-        color: Colors.transparent, // Sin fondo (transparente) como fue solicitado
-      ),
+      height: size * 0.72,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Globe background aura effect
-          Container(
-            width: size * 0.85,
-            height: size * 0.85,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  Colors.lightBlueAccent.withOpacity(0.4),
-                  const Color(0xFF0038A8).withOpacity(0.1),
-                  Colors.transparent,
-                ],
-              ),
+          // 1. Resplandor Suave Dorado/Azul de Silueta
+          Image.asset(
+            'assets/images/logo.png',
+            width: size * 1.03,
+            fit: BoxFit.contain,
+            color: const Color(0xFFFFC107).withOpacity(0.4),
+            colorBlendMode: BlendMode.srcIn,
+            errorBuilder: (context, error, stackTrace) => const SizedBox(),
+          ),
+
+          // 2. Sombra Nítida de Contorno
+          Transform.translate(
+            offset: const Offset(0, 4),
+            child: Image.asset(
+              'assets/images/logo.png',
+              width: size,
+              fit: BoxFit.contain,
+              color: const Color(0xFF001F5C).withOpacity(0.15),
+              colorBlendMode: BlendMode.srcIn,
+              errorBuilder: (context, error, stackTrace) => const SizedBox(),
             ),
           ),
-          // Central Cross & Family Silhouette representation
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.add, // Golden Cross
-                size: 38,
-                color: Color(0xFFFFC107),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.person, size: 22, color: Colors.white),
-                  Icon(Icons.child_care, size: 16, color: Colors.white70),
-                  Icon(Icons.person_outline, size: 20, color: Colors.white),
-                ],
-              ),
-            ],
+
+          // 3. Logo PNG Oficial Limpio y Nítido
+          Image.asset(
+            'assets/images/logo.png',
+            width: size,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => Image.network(
+              'assets/logo.png',
+              width: size,
+              fit: BoxFit.contain,
+            ),
           ),
         ],
       ),

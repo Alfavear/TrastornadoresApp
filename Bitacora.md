@@ -102,3 +102,135 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
   - Función de 1 clic en `AdminAgendaView` para copiar al portapapeles el listado de servidores formateado listo para pegar en el grupo de WhatsApp.
 - **Alertas Visuales de Cobertura en Calendario**:
   - Resaltado automático en naranja y badge de advertencia para fechas con baja cantidad de servidores confirmados (< 2).
+
+### 10. Compilación Inicial y Configuración (04/08/2026)
+- Se instalaron exitosamente las dependencias del backend (`npm install`) y se verificó que la compilación funciona sin errores (`npm run build`).
+- Se corrigió la dependencia de `json_serializable` en el frontend, cambiándola a la versión `^6.9.5` debido a conflictos de resolución de versiones.
+- Se instalaron exitosamente las dependencias del frontend (`flutter pub get`).
+- Se generaron exitosamente los modelos y utilidades en el frontend usando `dart run build_runner build --delete-conflicting-outputs`.
+- El proyecto se encuentra ahora en un estado compilable base, cubriendo los primeros pendientes registrados en la bitácora.
+
+### 11. Conexión de Base de Datos Neon, Pruebas Unitarias y Despliegue Web (04/08/2026)
+- Se configuró la conexión del backend (NestJS + Prisma) con la base de datos PostgreSQL en la nube de Neon.tech.
+- Se sincronizaron las tablas de la base de datos (`User`, `Schedule`, `ScheduleDate`, `Availability`) con `prisma db push`.
+- Se creó una suite de pruebas unitarias en Flutter usando `mocktail` para validar los modelos (`ScheduleModel`) y el repositorio (`ScheduleRepository`).
+- Se corrigió el error de enrutamiento habilitando la ruta `/admin` en `app_router.dart` para conectar el botón de acceso de administración.
+- Se corrigió el error tipográfico en `AdminDashboardView` (`FontWeight.extrabold` a `FontWeight.w800`).
+- Se desplegó la aplicación web compilada en modo SPA de producción (`flutter build web`) sirviéndose en `http://localhost:8080`.
+- Se solucionó el error `401 (Unauthorized)` en los endpoints de NestJS actualizando `FirebaseAuthGuard` para que, en modo desarrollo (sin credenciales reales de Firebase Admin), asigne automáticamente un usuario simulado (mock) cuando las peticiones demo no lleven header de autorización.
+- Se generaron automáticamente en la base de datos de Neon los cronogramas semilla para Agosto 2026 y Septiembre 2026 con sus respectivas fechas calculadas (Jueves, Sábados y Domingos).
+- Se solucionó la excepción `LocaleDataException` añadiendo `initializeDateFormatting('es', null)` en el `main.dart` para permitir el formateo en español de las fechas del calendario.
+- Se corrigió el patrón de formateo de `intl` en los textos de fechas de `'EEEE d de MMMM'` a `"EEEE d 'de' MMMM"`, eliminando la interpretación de la palabra `de` como tokens de día de mes y día de semana (`3 3E`).
+- Se mejoró la resiliencia en `ScheduleRepository` para deserializar respuestas de la API tanto si se entregan como `List` directo o envueltas en un objeto JSON (`Map`), previniendo el error `type '_JsonMap' is not a subtype of type 'List<Object?>'`.
+
+### 13. Rediseño UX: Bandeja de Cronogramas, Estados Abierto/Cerrado y Perfil (04/08/2026)
+- **Perfil e Identidad del Servidor**: Se creó `currentUserProvider` en `lib/features/auth/presentation/providers/user_provider.dart` para almacenar los datos del usuario activo y vincular sus respuestas.
+- **Bandeja de Cronogramas (Inbox)**: Se transformó `ScheduleScreen` en una vista de bandeja de entrada que lista las tarjetas de cada mes (ej. *Agosto 2026*, *Septiembre 2026*) mostrando su estado (`ABIERTO` o `CERRADO`) y la cantidad de respuestas completadas.
+- **Detalle e Interacción por Estados**: Se creó `ScheduleDetailView` que:
+  - Carga el historial de selecciones guardadas del usuario desde Neon.
+  - Si el cronograma está **Abierto (`isOpen: true`)**: permite marcar *"Puedo"*, *"No puedo"* y toggle para desmarcar.
+  - Si el cronograma está **Cerrado (`isOpen: false`)**: se activa el modo estricto de lectura/consulta deshabilitando la edición.
+
+### 14. Seguridad y Control de Acceso por Roles - RBAC (04/08/2026)
+- **Guard en Enrutador (`app_router.dart`)**: Se implementó una regla de redirección `redirect` que intercepta la navegación a `/admin`. Si el rol del usuario no es `'ADMIN'`, bloquea automáticamente el acceso y redirige a la bandeja `/schedule`.
+- **Selección de Perfil en Login**: Se separaron las opciones de ingreso en `LoginScreen`:
+  - *"Ingresar como Servidor"* -> Asigna rol `PARTICIPANT`.
+  - *"Acceso Administrador (Líder)"* -> Asigna rol `ADMIN`.
+- **Restricción de UI**: El botón para acceder al panel de administración en el `AppBar` de `ScheduleScreen` solo es visible si el usuario tiene rol `ADMIN`.
+- **Navegación de Administrador**: Se agregaron accesos en `AdminHomeScreen` para conmutar a la vista de servidor o cerrar sesión.
+
+### 15. Integración del MCP Server de Google Stitch (04/08/2026)
+- Se configuró la conexión del servidor MCP remoto de Google Stitch en `opencode.json` con su respectiva clave API (`X-Goog-Api-Key`).
+- Se documentó la integración y las reglas de MCP en `OPENCODE.md`.
+
+### 16. Generación de Diseños con Google Stitch MCP y Sistema de Colores (04/08/2026)
+- **Generación de Pantallas en Stitch**: Se ejecutó la herramienta `generate_screen_from_text` de Stitch MCP dentro del proyecto `Trastornadores Ministry Interface` (`projects/9255270375602945903`), creando los diseños para:
+  - *Participant Schedule Manager* (Vistas de Bandeja e Interacción en móvil).
+  - *Admin Leader Dashboard* (Dashboard de líderes, Matriz con badges de advertencia y exportación).
+- **Paleta Oficial Aplicada**: Se configuró la paleta oficial en Flutter:
+  - **Fondo / Navegación**: Navy Profundo / Negro (`#0A1128` / `#101415`).
+  - **Primario**: Azul Rey (`#0038A8`).
+  - **Acento**: Dorado (`#FFC107`).
+  - **Contenedores**: Blanco Crisp (`#FFFFFF`) con bordes en Azul Rey y bordes redondeados a `16px`.
+
+### 17. Replicación Fiel del Diseño e Interfaz de Google Stitch (04/08/2026)
+- **Menú Lateral (`Navigation Drawer`)**: Se incorporó el Drawer lateral fiel al prototipo de Stitch con la insignia dorada `TRASTORNADORES`, perfil del servidor activo y opciones de navegación (*Inicio*, *Agenda*, *Ministerios*, *Equipo*, *Reportes*, *Ajustes*).
+- **Sección de Horarios de Referencia**: Se incorporaron las tarjetas de horarios de servicio en la vista principal:
+  - *Jueves - Servicio General (19:30 - 21:30)*
+  - *Sábado - Reunión de Jóvenes (18:00 - 20:00)*
+  - *Domingo - Servicios Dominicales (09:00 - 14:00)*
+- **Barra de Navegación Inferior Móvil**: Se agregaron los 4 ítems inferiores (*Servicio*, *Agenda*, *Equipo*, *Perfil*) coordinados con la paleta de colores oficial.
+
+### 18. Funcionalidad 100% Interactiva en Vivo y Persistencia Real (04/08/2026)
+- **Despliegue Interactivo de Fechas en Pantalla**: Cada tarjeta de mes (*AGOSTO 2026*) ahora se despliega interactivamente en la pantalla principal para responder directamente las fechas sin necesidad de pantallas estáticas.
+- **Acciones y Persistencia Real**: Al presionar *"Puedo"* o *"No Puedo"*, se dispara inmediatamente una petición HTTP `POST /schedule/availability` guardando la respuesta en la base de datos de PostgreSQL **Neon**.
+- **Navegación Totalmente Operativa**: Todas las pestañas del menú lateral y de la barra inferior (*Inicio*, *Agenda*, *Equipo*, *Perfil*) están conectadas a vistas funcionales con datos en tiempo real.
+
+### 19. Análisis y Generación del Calendario en la Gama del Blanco en Stitch (04/08/2026)
+- **Generación de Pantalla en Stitch MCP**: Se ejecutó `generate_screen_from_text` para la pantalla `Ministry Calendar & Schedule Manager` en la gama del blanco (`Lumina Ministry Light`: fondo `#FFFFFF` / `#F7F9FB`, texto `#001F5C`, primario `#0038A8`, aros/badges `#FFC107`).
+- **Integración de Vista de Calendario**: La pestaña de **Calendario** permite navegar por los días del mes con sus badges de estado (Puntos verdes = Cubierto, Puntos naranjas = Incompleto < 2 servidores).
+- **Tema Claro de Stitch Aplicado**: Se configuró la interfaz para utilizar la gama del blanco puro con sombras tonales suaves y tarjetas flotantes de elevación 2px.
+
+### 20. Autenticación Obligatoria Google, Vista de Perfil y Textos 100% en Español (04/08/2026)
+- **Inicio de Sesión Exclusivo con Google**: Se actualizó `LoginScreen` para requerir el inicio con cuenta oficial de Google (`Continuar con Google`) incorporando un selector de perfil de acceso (*Servidor / Participante* vs *Líder Administrador*).
+- **Vista de Perfil Mejorada**: Se reconstruyó la pestaña de **Perfil** presentando la información completa del usuario (Avatar, Nombre, Correo, Badge de Rol Ministerial), tarjetas estadísticas de servicios confirmados y nivel de cuenta, junto con conmutador de rol y cierre de sesión.
+- **Traducción Total al Español**: Se tradujeron absolutamente todos los textos de la interfaz al español elimando encabezados en inglés (ej. *Coordinación Ministerial*, *Bandeja de Cronogramas*, *Horarios de Servicio Oficiales*).
+
+### 21. Flujo Corregido: Permisos desde el Admin y Enlace al Pie en el Login (04/08/2026)
+- **Eliminación de Selección de Rol en el Login**: El login ahora solo requiere iniciar sesión con Google (`Continuar con Google`). No se solicita ningún rol al usuario al entrar.
+- **Enlace de Administración al Pie**: Se incorporó un enlace discreto en la parte inferior del card de login (*"Acceso a Panel de Administración (Líder)"*) para acceder al panel de control.
+- **Nueva Vista de Administración de Permisos**: En la sección de Admin se creó la pestaña **"Permisos"** (`AdminMembersView`) que permite a los líderes asignar y modificar el nivel de acceso (*Miembro Servidor* o *Líder Admin*) de cualquier usuario.
+
+### 22. Generación e Integración de Login Screen en la Gama del Blanco en Stitch (04/08/2026)
+- **Generación en Stitch MCP**: Se ejecutó `generate_screen_from_text` para la pantalla `Login Screen (Google Auth)` en el proyecto de Stitch (`9255270375602945903`) con la paleta de blanco puro (`#FFFFFF`), canvas slate (`#F7F9FB`), insignia dorada central y tipografía `Outfit`.
+- **Implementación Fiel en Flutter**: Se actualizó `LoginScreen` (`frontend/lib/features/auth/presentation/login_screen.dart`) reflejando exactamente el diseño de Stitch con el emblema circular en la parte superior, botón principal de Google y enlace discreto en la parte inferior para administradores.
+
+### 23. Integración del Logo Oficial en la Pantalla de Login (04/08/2026)
+- **Asset de Logo Oficial**: Se guardó e incorporó la imagen oficial del logo (*Ministerio de Jesús - Trastornadores - Visión Conquistadora*) en `frontend/assets/images/logo.png` y `frontend/web/assets/logo.png`.
+- **Integración de Componentes**: Se actualizó `TrastornadoresBadgeLogo` y `TrastornadoresHeaderLogo` (`frontend/lib/core/widgets/logo_widget.dart`) para cargar directamente el gráfico PNG oficial en `LoginScreen` y en las barras superiores de la app.
+
+### 24. Rediseño Estético Deep Navy y Escudo con Luz Aural y Relieve 3D (04/08/2026)
+- **Paleta de Colores de Referencia**: Se aplicó el degradado Deep Navy (`#06143D` -> `#040C24`) para el fondo y la tarjeta saturada azul rey (`#0D235C`) con bordes iluminados de 1.5px.
+- **Borde de Luz y Relieve 3D en el Escudo**: El contenedor del logo oficial incorporó una luz aural con sombra difusa dorada (`#FFC107`) combinada con una sombra profunda de caída 3D (`blur: 20px, offset: Y 10px`) y borde dorado de 2.5px de grosor.
+- **Estilo de Botones y Enlaces**: Botón blanco encapsulado (pill-shaped) para *Continuar con Google* y texto en dorado brillante para el acceso directo de administración.
+
+### 25. Panel Blanco Traslúcido Glassmorphism y Escudo con Resplandor Dorado (04/08/2026)
+- **Panel Blanco Traslúcido (`BackdropFilter`)**: Se aplicó efecto de vidrio esmerilado (*Glassmorphism*) con opacidad blanca al 12% (`color: Colors.white.withOpacity(0.12)` y `blur: 16px`) sobre el fondo Deep Navy para lograr un contraste óptimo.
+- **Escudo con Resplandor Aura Dorado**: Se añadieron doble sombra difusa en tono dorado (`#FFC107`, `blur: 36px, spread: 4px`) y azul rey, con relieve 3D profundo (`blur: 24px, offset: Y 12px`) y contorno dorado de 3.0px.
+- **Tipografía y Contraste**: Títulos en blanco puro con sombra proyectada (*drop shadow*) e icono de administración en dorado vibrante.
+
+### 26. Resplandor y Relieve 3D Siguiendo la Silueta Exacta del Logo (04/08/2026)
+- **Eliminación de Cajas Cuadradas**: Se eliminó cualquier marco, recuadro o caja alrededor del logo.
+- **Efecto de Silueta de Contorno (`TrastornadoresBadgeLogo`)**: El resplandor dorado (`#FFC107`) y la sombra de relieve 3D se aplican directamente sobre la forma exacta del logo gráfico (el mundo, las letras del Ministerio y la cruz), creando un contorno iluminado flotante con relieve sin bordes cuadrados.
+
+### 27. Halo Radiante de Luz Blanca y Fondo Azul Rey de Alto Contraste (04/08/2026)
+- **Fondo Azul Rey Vibrante**: Se ajustó el degradado del canvas a tonos azul rey más vivos y luminosos (`#0C3088` -> `#0038A8`).
+- **Halo Radiante Blanco y Dorado**: Se incorporó un destello de luz blanca pura central (`blur: 40px, opacity: 0.75`) combinado con la aureola dorada detrás de la silueta del logo (`TrastornadoresBadgeLogo`) para que las letras oscuras y el mundo destaquen con total nitidez y legibilidad.
+- **Vidrio Esmerilado Luminoso**: El panel blanco traslúcido aumentó su opacidad a 18% con bordes de cristal brillante al 40%.
+
+### 28. Restablecimiento del Fondo Blanco Puro Nítido (04/08/2026)
+- **Fondo Blanco Slate (`#F7F9FB`)**: Se restableció la pantalla de login al fondo blanco slate ultra-limpio con la tarjeta blanca brillante (`#FFFFFF`) y sombras tonales de 20px.
+- **Logo Oficial sobre Fondo Blanco**: El logo oficial con su resplandor dorado suave y sombra de contorno destaca nítidamente sobre el fondo claro.
+
+### 29. Autenticación Multimétodo: Teléfono + Perfil, Correo/Clave y Google (04/08/2026)
+- **Tres Opciones Interactivas de Ingreso**:
+  1. **Google**: Botón directo de un solo toque con cuenta oficial.
+  2. **Número de Teléfono y Perfil**: Formulario para ingresar teléfono (`+57 ...`), Nombre Completo y Ministerio/Equipo, creando y guardando el perfil del usuario.
+  3. **Correo y Contraseña**: Formulario estándar con validación de credenciales.
+- **Acceso Administrativo al Pie**: Se mantuvo el enlace inferior para ingresar al panel de control de líderes administradores.
+
+### 30. Simplificación del Ingreso por Teléfono (04/08/2026)
+- **Campos Solicitados**: Se eliminó el campo opcional de Ministerio. La opción de teléfono requiere únicamente **Número de Teléfono** (`+57 ...`) y **Nombre Completo**.
+- **Creación de Perfil Directo**: Al enviar los datos, se crea y registra el perfil del servidor participante para confirmar su disponibilidad de inmediato.
+
+### 12. Fortalecimiento del Backend: Auth Real, Módulo Users y Buenas Prácticas (04/08/2026)
+- **Verificación real de tokens Firebase**: `FirebaseAuthGuard` ahora verifica el Bearer token contra el Admin SDK mediante el nuevo `FirebaseService` (módulo global `core/firebase/`). El mock solo aplica en desarrollo sin credenciales (`isMockEnabled`), nunca en producción.
+- **Nuevo `UsersModule` (global)**: sincroniza el `firebaseUid` del token con la tabla `User` (upsert por `firebaseUid`). Endpoints protegidos `POST /users/sync` y `GET /users/me`.
+- **Corrección del mapeo de usuario**: `registerAvailability` ya no usa el `firebaseUid` como `userId` de la tabla; ahora resuelve el `User.id` interno vía `UsersService.getOrCreateByFirebaseUid`.
+- **`PrismaService`**: se implementó `onModuleDestroy` con `$disconnect()` y se registró `enableShutdownHooks(app)` en `main.ts`.
+- **Configuración**: se instaló `@nestjs/config` (ConfigModule global, `.env` con `PORT`, `NODE_ENV`, `FIREBASE_SERVICE_ACCOUNT_PATH`). `main.ts` limpio: sin init de Firebase (lo maneja `FirebaseService`), puerto configurable.
+- **Validaciones y Swagger**: `CreateScheduleDto.year` limitado a año actual + 2; se agregaron `@ApiCreatedResponse`/`@ApiOkResponse` a los endpoints.
+- **Tipos centralizados**: `core/auth/types/auth.types.ts` con `AuthUser` y `AuthenticatedRequest`.
+- **Tests**: 12 pruebas unitarias (guard de Firebase, `UsersService`, `ScheduleService` con generación de fechas, DTO upsert).
+- **Verificación**: `npm run build`, `npm run lint` y `npm test` pasan sin errores. Prueba de humo E2E contra Neon: `POST /users/sync` crea el usuario, `POST /schedule` genera solo Jue/Sáb/Dom (octubre 2026: 14 fechas) y `POST /schedule/availability` registra disponibilidad vinculada al `User.id` interno.
+- **Pendiente recomendado**: crear migraciones formales de Prisma (`prisma migrate dev`) para gestionar el esquema versionado en lugar de `db push`.

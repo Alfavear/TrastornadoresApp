@@ -1,15 +1,24 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { UserRole } from '@prisma/client';
 import { PrismaService } from '../../core/prisma/prisma.service';
+import { UsersService } from '../users/users.service';
+import { AuthUser } from '../../core/auth/types/auth.types';
 import { CreateScheduleDto, RegisterAvailabilityDto } from './dto/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async createSchedule(dto: CreateScheduleDto) {
     const { month, year } = dto;
 
-    // Check if schedule already exists
     const existing = await this.prisma.schedule.findFirst({
       where: { month, year },
     });
@@ -20,7 +29,6 @@ export class ScheduleService {
       );
     }
 
-    // Generate Thursdays, Saturdays, and Sundays for the given month and year
     const dates = this.generateTargetDays(year, month);
 
     const schedule = await this.prisma.schedule.create({
@@ -56,7 +64,38 @@ export class ScheduleService {
     });
   }
 
-  async registerAvailability(userId: string, dto: RegisterAvailabilityDto) {
+  async updateStatus(id: string, isOpen: boolean) {
+    const schedule = await this.prisma.schedule.findUnique({ where: { id } });
+
+    if (!schedule) {
+      throw new NotFoundException('Schedule not found.');
+    }
+
+    return this.prisma.schedule.update({
+      where: { id },
+      data: { isOpen },
+    });
+  }
+
+  async registerAvailability(user: AuthUser, dto: RegisterAvailabilityDto) {
+    const scheduleDate = await this.prisma.scheduleDate.findUnique({
+      where: { id: dto.scheduleDateId },
+      include: { schedule: true },
+    });
+
+    if (!scheduleDate) {
+      throw new BadRequestException('Schedule date not found.');
+    }
+
+    // Cuando el cronograma está cerrado, solo un administrador puede modificar.
+    if (!scheduleDate.schedule.isOpen && user.role !== UserRole.ADMIN) {
+      throw new BadRequestException(
+        'El cronograma está cerrado. Solo un administrador puede modificar la disponibilidad.',
+      );
+    }
+
+    const userId = await this.usersService.getOrCreateByFirebaseUid(user);
+
     return this.prisma.availability.upsert({
       where: {
         userId_scheduleDateId: {

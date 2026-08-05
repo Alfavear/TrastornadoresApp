@@ -194,7 +194,7 @@ class AdminDashboardView extends ConsumerWidget {
           const SizedBox(height: 12),
           Text(
             value,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.extrabold, color: color),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: color),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
