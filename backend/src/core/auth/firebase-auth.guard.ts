@@ -46,9 +46,10 @@ export class FirebaseAuthGuard implements CanActivate {
         name: decodedToken.name ?? dbUser?.name ?? undefined,
         photoUrl: decodedToken.picture ?? dbUser?.photoUrl ?? undefined,
         role:
-          (dbUser?.role ?? this.usersService.isBootstrapAdmin(decodedToken.uid))
+          dbUser?.role ??
+          (this.usersService.isBootstrapAdmin(decodedToken.uid)
             ? UserRole.ADMIN
-            : UserRole.PARTICIPANT,
+            : UserRole.PARTICIPANT),
       };
       return true;
     } catch {

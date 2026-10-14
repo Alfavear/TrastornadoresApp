@@ -301,3 +301,21 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
   - Mapeo ROADMAP → Agente, DoD por tipo, Métricas en cycle-state.json
   - Impedimentos auto-resueltos: analyze warnings, npm audit, tests rotos, deps conflicts
 - **ROADMAP Actualizado**: Items 3.11, 7.6 marcados `[x]`
+
+### 37. Auditoría + Cobertura Total de Pruebas (13/10/2026)
+- **BUG CRÍTICO CORREGIDO**: `FirebaseAuthGuard` elevaba a ADMIN a todo usuario con rol en DB (`(role ?? bootstrap) ? ADMIN : ...`). Fix: `dbUser?.role ?? (bootstrap ? ADMIN : PARTICIPANT)` en `backend/src/core/auth/firebase-auth.guard.ts:43-51`. Test de regresión agregado.
+- **Backend: 25 → 73 tests (10 suites)**:
+  - `schedule.service.spec`: 8 → 20 (oct-2026 14 fechas, feb-2024 bisiesto, sin meses vecinos, getSchedules orden/includes, NO_PUEDO, idempotencia upsert, notifyGroup 0/N/phone-null/solo-PUEDO, notifyReminder ok/sin-user/sin-phone/sin-fecha)
+  - `users.service.spec`: 5 → 11 (+no-degrada-rol, lastAccess, trim ADMIN_UIDS, sin-var, findByFirebaseUid, findById)
+  - `firebase-auth.guard.spec`: 7 → 9 (+regresión PARTICIPANT se mantiene, hereda email/nombre/photo de DB)
+  - `roles.guard.spec`: 4 → 6 (+multi-rol, array vacío)
+  - NUEVOS: `whatsapp.service.spec` (4), `firebase.service.spec` (3), `schedule.controller.spec` (6), `users.controller.spec` (2), `schedule.dto.spec` (6)
+  - Verificación: `npm run lint` 0 errores, `npm run build` OK, `npm test` 73/73
+- **Frontend: 21 → 55 tests, `flutter analyze` 0 issues**:
+  - `schedule_repository_test`: 4 → 18 (+Map-wrapped, bare-Map, payload inesperado, NO_PUEDO, create/update/notify endpoints, offline con mensaje)
+  - `schedule_model_test`: 4 → 11 (+toJson roundtrip x4, defaults vacíos, copyWith isOpen)
+  - NUEVOS: `user_provider_test` (8: defaults, mockProfile, override, fetch ok/defaults/fallback-no-Map), `schedule_providers_test` (5: repository, future ok/error/vacío, dio baseUrl)
+  - `critical_screens_test`: fix `prefer_const_constructors` (6 infos → 0)
+  - Verificación: `flutter analyze` 0 issues, `flutter test` 55/55
+- **Seguridad `npm audit`**: 24 vulns (2 críticas `handlebars`, `proxy-addr` transitivas de NestJS/Swagger + 11 altas + 11 moderadas). No bloquean push; documentadas para roadmap 4.7.
+- **ROADMAP**: sin cambios de `[x]` (3.10, 3.11, 7.4, 7.5, 7.6 ya estaban marcados); queda como siguiente 2.11 Helmet+Throttler, 3.12, 3.13, 4.5.

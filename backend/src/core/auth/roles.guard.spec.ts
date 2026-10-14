@@ -72,4 +72,19 @@ describe('RolesGuard', () => {
       ForbiddenException,
     );
   });
+
+  it('debe permitir si el usuario tiene uno de varios roles', () => {
+    const { context, guard } = buildContext({
+      roles: [UserRole.ADMIN, UserRole.PARTICIPANT],
+      userRole: UserRole.PARTICIPANT,
+    });
+    expect(guard.canActivate(context as never)).toBe(true);
+  });
+
+  it('debe permitir array vacio como sin restriccion', () => {
+    const { context, guard } = buildContext({
+      roles: [],
+    });
+    expect(guard.canActivate(context as never)).toBe(true);
+  });
 });

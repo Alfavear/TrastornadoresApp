@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../../core/prisma/prisma.service';
@@ -25,6 +26,7 @@ describe('UsersService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    delete process.env.ADMIN_UIDS;
   });
 
   it('debe sincronizar (upsert) al usuario por firebaseUid', async () => {
@@ -111,6 +113,26 @@ describe('UsersService', () => {
     });
   });
 
+  it('no debe degradar ni elevar rol si no es bootstrap (update role undefined)', async () => {
+    process.env.ADMIN_UIDS = '';
+    prismaMock.user.upsert.mockResolvedValue({ id: 'x' });
+    await service.syncUser({ uid: 'u1', role: 'ADMIN' });
+    expect(prismaMock.user.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.objectContaining({ role: undefined }),
+      }),
+    );
+  });
+
+  it('debe resolver conflicto de sync: mismo firebaseUid actualiza lastAccess', async () => {
+    prismaMock.user.upsert.mockResolvedValue({ id: 'internal-1' });
+    const before = new Date();
+    await service.syncUser({ uid: 'fb-1', role: 'PARTICIPANT' });
+    const lastAccess = prismaMock.user.upsert.mock.calls[0][0].update
+      .lastAccess as Date;
+    expect(lastAccess.getTime()).toBeGreaterThanOrEqual(before.getTime());
+  });
+
   it('getOrCreateByFirebaseUid debe devolver el id interno', async () => {
     prismaMock.user.upsert.mockResolvedValue({ id: 'internal-3' });
 
@@ -128,5 +150,33 @@ describe('UsersService', () => {
     expect(service.isBootstrapAdmin('mock-uid-123')).toBe(true);
     expect(service.isBootstrapAdmin('other-uid')).toBe(true);
     expect(service.isBootstrapAdmin('no-uid')).toBe(false);
+  });
+
+  it('isBootstrapAdmin debe ignorar espacios y vacios', () => {
+    process.env.ADMIN_UIDS = ' a , ,b,, ';
+    expect(service.isBootstrapAdmin('a')).toBe(true);
+    expect(service.isBootstrapAdmin('b')).toBe(true);
+    expect(service.isBootstrapAdmin('')).toBe(false);
+  });
+
+  it('isBootstrapAdmin debe retornar false sin variable', () => {
+    delete process.env.ADMIN_UIDS;
+    expect(service.isBootstrapAdmin('any')).toBe(false);
+  });
+
+  it('findByFirebaseUid debe delegar a prisma', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ id: '1' });
+    await service.findByFirebaseUid('fb-1');
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { firebaseUid: 'fb-1' },
+    });
+  });
+
+  it('findById debe delegar a prisma', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ id: '1' });
+    await service.findById('1');
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { id: '1' },
+    });
   });
 });

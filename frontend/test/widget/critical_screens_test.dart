@@ -34,7 +34,7 @@ void main() {
               role: 'PARTICIPANT',
             )),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: LoginScreen(),
           ),
         ),
@@ -218,7 +218,7 @@ void main() {
               role: 'ADMIN',
             )),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             home: Scaffold(
               body: Center(child: Text('AdminMembersView Test')),
             ),

@@ -93,6 +93,44 @@ describe('FirebaseAuthGuard', () => {
     expect(usersServiceMock.findByFirebaseUid).toHaveBeenCalledWith('fb-uid-2');
   });
 
+  it('REGRESION: debe mantener PARTICIPANT de DB y no elevar a ADMIN', async () => {
+    firebaseServiceMock.verifyIdToken = jest.fn().mockResolvedValue({
+      uid: 'fb-part',
+      email: 'p@test.com',
+      name: 'P',
+    });
+    usersServiceMock.findByFirebaseUid.mockResolvedValue({
+      role: 'PARTICIPANT',
+      email: 'p@test.com',
+    });
+    usersServiceMock.isBootstrapAdmin.mockReturnValue(false);
+    const request = buildRequest({ authorization: 'Bearer valid-token' });
+    const guard = getGuard();
+
+    await expect(guard.canActivate(buildContext(request))).resolves.toBe(true);
+    expect(request.user.role).toBe('PARTICIPANT');
+  });
+
+  it('debe heredar email/nombre de DB cuando el token no los trae', async () => {
+    firebaseServiceMock.verifyIdToken = jest
+      .fn()
+      .mockResolvedValue({ uid: 'fb-uid-9' });
+    usersServiceMock.findByFirebaseUid.mockResolvedValue({
+      role: 'PARTICIPANT',
+      email: 'db@test.com',
+      name: 'Db Name',
+      photoUrl: 'http://photo',
+    });
+    usersServiceMock.isBootstrapAdmin.mockReturnValue(false);
+    const request = buildRequest({ authorization: 'Bearer valid-token' });
+    const guard = getGuard();
+
+    await expect(guard.canActivate(buildContext(request))).resolves.toBe(true);
+    expect(request.user.email).toBe('db@test.com');
+    expect(request.user.name).toBe('Db Name');
+    expect(request.user.photoUrl).toBe('http://photo');
+  });
+
   it('debe elevar a ADMIN un uid bootstrapped aún sin registro en DB', async () => {
     firebaseServiceMock.verifyIdToken = jest.fn().mockResolvedValue({
       uid: 'fb-uid-3',
