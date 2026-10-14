@@ -355,3 +355,10 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - **1.3 Dockerfile**: multi-stage (deps/build/runner), non-root `app`, `prisma generate`, `EXPOSE 3000`, `node dist/main`. Validado con `prisma validate` OK.
 - **1.4 CI**: `.github/workflows/ci.yml` (backend: ci+generate+lint+build+test+validate; frontend: pub get+analyze+test). `permissions: contents:read`.
 - **ROADMAP**: 1.3, 1.4 marcados `[x]`; siguiente 3.12 Android smoke, 1.1/1.2/1.5, 5.7/5.8, 8.3–8.5.
+
+### 43. Loop 1.1/1.2/5.8 + smoke Android bloqueado (14/10/2026)
+- **1.1 Stack un comando**: nuevos `scripts/dev-up.bat` + `scripts/dev-up.sh` (compose db + backend .env/bootstrap/install/generate + frontend pub get/run).
+- **1.2 Envs**: ya cubierto por `backend/.env.example` (§41); marcado `[x]`.
+- **5.8 Modelos**: agentes ya usan proveedor OpenCode Zen (`opencode/*`, sin Anthropic); marcado `[x]`.
+- **3.12 Android smoke**: `flutter build apk --debug` FALLA por entorno, no por código: Kotlin daemon `Could not close incremental caches` + `different roots` entre `C:\...\Pub\Cache` y proyecto en `D:\` (url_launcher_android). Requiere `PUB_CACHE` en misma unidad o `flutter clean` + reintento en máquina con disco único. Marcado `[~]` en curso; release firmada sigue pendiente (8.4).
+- **ROADMAP**: 1.1, 1.2, 5.8 marcados `[x]`; 3.12 `[~]`; siguiente 1.5 estrategia despliegue, 4.6 rotación secretos, 4.7 auditoría cierre, 8.3–8.5.

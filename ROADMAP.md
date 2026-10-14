@@ -9,8 +9,8 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - Base: `origin/main` (7ffc92c) + andamiaje de opencode
 
 ## 1. Infraestructura
-- [ ] 1.1 Levantar stack completo con un solo comando (docker compose + scripts)
-- [ ] 1.2 `.env.example` documentado por ambiente (dev/staging/prod)
+- [x] 1.1 Levantar stack completo con un solo comando (docker compose + scripts)
+- [x] 1.2 `.env.example` documentado por ambiente (dev/staging/prod)
 - [x] 1.3 Dockerfile del backend
 - [x] 1.4 Pipeline CI (lint + build + test) en GitHub Actions
 - [ ] 1.5 Estrategia de despliegue del backend
@@ -44,7 +44,7 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 3.9 **Bearer token real de Firebase en cada petición** (interceptor en `dioProvider`)
 - [x] 3.10 `flutter analyze` en verde
 - [x] 3.11 Tests de widget para pantallas críticas
-- [ ] 3.12 Build Android release (smoke)
+- [~] 3.12 Build Android release (smoke)
 - [x] 3.13 Manejo de sesión expirada (interceptor 401 → login)
 
 ## 4. Seguridad
@@ -64,7 +64,7 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 5.5 5 skills (`trastornadores-dev` + 4 operativas)
 - [x] 5.6 7 comandos (`/check`, `/gen-models`, `/bitacora`, `/estado`, `/actualizar-bitacora`, `/nuevo-modulo`, `/revisar-seguridad`)
 - [ ] 5.7 Verificar que los MCPs inician (requiere `GITHUB_TOKEN` y `STITCH_API_KEY`)
-- [ ] 5.8 Ajustar `model:` de los agentes si el proveedor no es Anthropic
+- [x] 5.8 Ajustar `model:` de los agentes si el proveedor no es Anthropic
 
 ## 6. Documentación
 - [x] 6.1 `Bitacora.md` con historial
