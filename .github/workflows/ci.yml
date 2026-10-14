@@ -28,6 +28,12 @@ jobs:
       - name: Prisma migrate (solo valida sintaxis en CI)
         working-directory: backend
         run: npx prisma validate
+      - name: Prisma migrate deploy (solo ramas main con DATABASE_URL)
+        if: github.ref == 'refs/heads/main' && env.DATABASE_URL != ''
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
 
   frontend:
     runs-on: ubuntu-latest

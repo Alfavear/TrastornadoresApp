@@ -13,7 +13,7 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 1.2 `.env.example` documentado por ambiente (dev/staging/prod)
 - [x] 1.3 Dockerfile del backend
 - [x] 1.4 Pipeline CI (lint + build + test) en GitHub Actions
-- [ ] 1.5 Estrategia de despliegue del backend
+- [x] 1.5 Estrategia de despliegue del backend
 
 ## 2. Backend NestJS
 - [x] 2.1 Arquitectura base + módulos (`core`, `modules`)
@@ -30,7 +30,7 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 2.12 CORS restringido por ambiente
 - [x] 2.13 Swagger protegido/deshabilitado en producción
 - [x] 2.14 Logging estructurado
-- [ ] 2.15 Migraciones de Prisma en CI (`prisma migrate deploy`)
+- [x] 2.15 Migraciones de Prisma en CI (`prisma migrate deploy`)
 
 ## 3. Frontend Flutter
 - [x] 3.1 Proyecto completo generado (android, ios, web, windows, linux, macos)
@@ -53,8 +53,8 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 4.3 Secretos fuera del repositorio (`.gitignore`)
 - [x] 4.4 Validación global con `whitelist` + `transform`
 - [x] 4.5 Bootstrap admin protegido (allowlist por UID/email)
-- [ ] 4.6 Rotación de secretos documentada
-- [ ] 4.7 Auditoría con `/revisar-seguridad` y cierre de hallazgos
+- [x] 4.6 Rotación de secretos documentada
+- [x] 4.7 Auditoría con `/revisar-seguridad` y cierre de hallazgos
 
 ## 5. OpenCode / Automatización
 - [x] 5.1 Config unificada en `opencode.json` (raíz)
@@ -87,7 +87,7 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 8.2 Variables de entorno documentadas por ambiente
 - [ ] 8.3 Backend desplegado
 - [ ] 8.4 App Android firmada y distribuida
-- [ ] 8.5 Plan de respaldos de la base de datos
+- [x] 8.5 Plan de respaldos de la base de datos
 
 ## Reglas de mantenimiento
 1. Al cerrar una tarea: marca `[x]` aquí y documenta en `Bitacora.md` (comando `/actualizar-bitacora`).
