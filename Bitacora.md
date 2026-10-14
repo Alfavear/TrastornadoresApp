@@ -412,3 +412,8 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
   4. `postgres.query select current_database()` (Code Mode) → **OK** ✓ (`TrastornadoresApp`).
 - **Resultado: 3/4**. 5.7 sigue `[~]` solo por Stitch. Acción requerida del usuario: proveer `STITCH_API_KEY` (Google AI Studio / Cloud console) para persistirla en scope `User`, o completar `opencode mcp auth stitch` en sesión interactiva.
 - **Seguridad (4.6)**: la salida de `opencode mcp list` vuelve a expandir la `DATABASE_URL` completa en el log. Reitero rotación de credencial Neon + token `gho_` según `docs/DEPLOY.md`.
+
+### 49. Loop 5.7 `STITCH_API_KEY` persistida, pendiente reinicio final (14/10/2026)
+- El usuario proveyó la API key de Stitch: persistida en scope `User` (`len=53`, valor no volcado). `opencode.json` ya referencia `{env:STITCH_API_KEY}`, sin cambios de config.
+- El proceso OpenCode actual no la hereda (`proc` ausente) → `stitch.list_projects` seguirá en *"requires a login"* hasta **reiniciar la aplicación OpenCode**.
+- Al reiniciar: re-ejecutar checklist (mcp list 6/6 + `stitch.list_projects` + `github.get_me` + `postgres.query`); si 4/4, 5.7 pasa a `[x]` con §50.
