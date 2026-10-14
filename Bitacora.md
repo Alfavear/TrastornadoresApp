@@ -319,3 +319,11 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
   - Verificación: `flutter analyze` 0 issues, `flutter test` 55/55
 - **Seguridad `npm audit`**: 24 vulns (2 críticas `handlebars`, `proxy-addr` transitivas de NestJS/Swagger + 11 altas + 11 moderadas). No bloquean push; documentadas para roadmap 4.7.
 - **ROADMAP**: sin cambios de `[x]` (3.10, 3.11, 7.4, 7.5, 7.6 ya estaban marcados); queda como siguiente 2.11 Helmet+Throttler, 3.12, 3.13, 4.5.
+
+### 38. Hardening 2.11 Helmet + Throttler (13/10/2026)
+- Deps: `helmet@8.3.0` + `@nestjs/throttler@6.7.1`.
+- `app.module.ts`: `ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }])` + `APP_GUARD ThrottlerGuard` global. Constantes exportadas `THROTTLE_TTL_MS`, `THROTTLE_LIMIT_DEFAULT`.
+- `main.ts`: `app.use(helmet())` antes de CORS/pipes.
+- `schedule.controller.ts`: `@Throttle({ default: { limit: 10, ttl: 60_000 } })` en `notify/group`, `{ limit: 20 }` en `notify/reminder` (anti-spam WhatsApp).
+- Tests: nuevo `app.module.spec.ts` (4: constantes, imports, metadata LIMIT 10/20 + TTL). Backend 73→77 tests, lint 0, build OK.
+- **ROADMAP**: 2.11 marcado `[x]`; siguiente 2.12 CORS restringido por ambiente.

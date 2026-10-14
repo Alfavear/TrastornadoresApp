@@ -25,6 +25,7 @@ import {
 import { FirebaseAuthGuard } from '../../core/auth/firebase-auth.guard';
 import { RolesGuard } from '../../core/auth/roles.guard';
 import { Roles } from '../../core/auth/roles.decorator';
+import { Throttle } from '@nestjs/throttler';
 import type { AuthenticatedRequest } from '../../core/auth/types/auth.types';
 
 @ApiTags('Schedule (Cronograma)')
@@ -74,6 +75,7 @@ export class ScheduleController {
 
   @Post('notify/group/:dateId')
   @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({
     summary: 'Enviar recordatorio a todos los que sirven en la fecha (Admin)',
   })
@@ -84,6 +86,7 @@ export class ScheduleController {
 
   @Post('notify/reminder/:dateId/:userId')
   @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @ApiOperation({
     summary:
       'Enviar recordatorio individual a un usuario para una fecha (Admin)',

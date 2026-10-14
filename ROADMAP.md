@@ -26,7 +26,7 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 2.8 Módulo `notifications` (WhatsApp, mock provider)
 - [x] 2.9 DTOs con `class-validator` + Swagger
 - [x] 2.10 Carga de `.env` vía `ConfigModule`
-- [ ] 2.11 Helmet + rate limiting (throttler)
+- [x] 2.11 Helmet + rate limiting (throttler)
 - [ ] 2.12 CORS restringido por ambiente
 - [ ] 2.13 Swagger protegido/deshabilitado en producción
 - [ ] 2.14 Logging estructurado
