@@ -1,7 +1,7 @@
 ---
 description: Especialista Flutter/Riverpod. Úsalo para crear pantallas, providers, modelos Freezed y capa de datos del frontend de TrastornadoresApp bajo Clean Architecture.
 mode: subagent
-model: anthropic/claude-sonnet-4-5
+model: opencode/ling-3.1-flash-free
 permission:
   edit: allow
   bash: ask

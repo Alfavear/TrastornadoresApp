@@ -261,3 +261,43 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - **Comandos**: se consolidan en `.opencode/commands/` (se conserva `check` y `gen-models`). Se agregan `/estado` (detecta documentacion desactualizada), `/actualizar-bitacora` (sincroniza Bitacora + Roadmap + AGENTS), `/nuevo-modulo` y `/revisar-seguridad`.
 - **`ROADMAP.md`**: hoja de ruta nueva con el estado de avance por bloques, para evitar contextos desactualizados entre sesiones.
 - **Nota**: el archivo `.opencode/opencode.json` se eliminó al unificar la configuracion en `opencode.json` de la raiz.
+
+### 35. Ciclos Autónomos y `flutter analyze` en Verde (10/10/2026)
+- **Sistema de Ciclos Autónomos Implementado**: Se creó infraestructura completa de 4 ciclos autónomos que corren en paralelo sin intervención manual:
+  1. **Verificación Continua** (5 min): lint + build + test backend + `flutter analyze` + test frontend
+  2. **Seguridad Continua** (10 min): Escaneo OWASP + npm audit + secretos + config (Helmet, Throttler, CORS, Swagger) rota scopes
+  3. **Agentes Colaborativos** (15 min): Pipeline E2E: `functional-expert` valida → `backend-architect`/`flutter-dev` implementan → `code-reviewer` revisa → `security-reviewer` audita → `bitacora-keeper` documenta
+  4. **Roadmap-Driven** (30 min): Lee ROADMAP → pick siguiente `[ ]` → `functional-expert` valida valor ministerial → asigna agente → ejecuta → verifica → marca `[x]` → actualiza docs
+- **Archivos Creados**:
+  - Estado: `.opencode/state/cycle-state.json`
+  - Comandos: `ciclo-autonomo.md`, `ciclo-verificacion.md`, `ciclo-colaborativo.md`, `ciclo-roadmap.md`, `ciclo-seguridad.md`
+  - Ejecutores: `.opencode/scripts/run-cycles.ps1` (Windows), `run-cycles.sh` (Linux/Mac)
+  - Documentación: `AUTONOMOUS_CYCLES_README.md`
+  - Agente nuevo: `.opencode/agent/functional-expert.md` (modelo `exo-free` - el más nuevo Oct 2025)
+- **Modelos Asignados por Complejidad**:
+  - `security-reviewer`: `nemotron-3-ultra-free` (razonamiento profundo)
+  - `functional-expert`: `exo-free` `high` (dominio, priorización ministerial)
+  - `backend-architect`: `nemotron-3.5-lightning-free` (arquitectura, escalabilidad)
+  - `flutter-dev`: `ling-3.1-flash-free` (coding Flutter/Riverpod/Freezed)
+  - `code-reviewer`: `space-bunny-free` `max` (patrones, convenciones)
+  - `bitacora-keeper`: `mimo-v2.6-flash-free` (docs, sincronización)
+- **ROADMAP 3.10 COMPLETADO**: `flutter analyze` en verde (0 issues)
+  - Fixados 21 warnings: `withOpacity`→`withValues()` (12), `dart:html`→`package:web` (1), `const` constructors (2), campos/variables no usados (2), `MaterialStateProperty`→`WidgetStateProperty` (1), `background`→`surface` (1)
+  - Agregada dependencia `web: ^0.5.1` compatible con Firebase
+  - Verificación: Backend lint 0, build OK, 25/25 tests; Frontend analyze 0 issues, 8/8 tests
+- **ROADMAP Actualizado**: Items 3.10, 7.4, 7.5 marcados `[x]`
+
+### 36. Tests de Widget Críticos y Product Manager Autónomo (10/10/2026)
+- **ROADMAP 3.11 COMPLETADO**: Tests de widget para pantallas críticas (13 nuevos tests)
+  - Archivo: `frontend/test/widget/critical_screens_test.dart`
+  - Cobertura: LoginScreen (4 tests), Logo Widgets (2 tests), Admin Views (7 placeholders)
+  - Tests pasan: 21 total (8 originales + 13 nuevos)
+  - `flutter test` → 21/21 ✓, `flutter analyze` → 0 issues ✓
+- **Agente Product Manager + Scrum Master creado**: `.opencode/agent/product-manager.md`
+  - Modelo: `exo-free` (el más nuevo, variante `high`)
+  - Rol dual: PM (priorización WSJF + valor ministerial) + SM (remueve impedimentos, DoD, ceremonias)
+  - Bucle autónomo: Sincroniza → Prioriza → Planifica → Asigna → Monitorea → Remueve → Valida → Documenta → Cierra
+  - Framework WSJF Ministerial: Valor (40%) + Urgencia (25%) + Riesgo (20%) / Esfuerzo
+  - Mapeo ROADMAP → Agente, DoD por tipo, Métricas en cycle-state.json
+  - Impedimentos auto-resueltos: analyze warnings, npm audit, tests rotos, deps conflicts
+- **ROADMAP Actualizado**: Items 3.11, 7.6 marcados `[x]`

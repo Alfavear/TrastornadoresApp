@@ -34,7 +34,7 @@ class _AdminCalendarViewState extends ConsumerState<AdminCalendarView> {
               // Header Status Card
               Card(
                 elevation: 0,
-                color: const Color(0xFF0038A8).withOpacity(0.08),
+                color: const Color(0xFF0038A8).withValues(alpha: 0.08),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

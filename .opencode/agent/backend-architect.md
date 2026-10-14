@@ -1,7 +1,7 @@
 ---
 description: Arquitecto backend NestJS/Prisma. Úsalo para diseñar módulos, endurecer seguridad, mejorar escalabilidad y crear migraciones del backend de TrastornadoresApp.
 mode: subagent
-model: anthropic/claude-sonnet-4-5
+model: opencode/nemotron-3.5-lightning-free
 permission:
   edit: allow
   bash: ask

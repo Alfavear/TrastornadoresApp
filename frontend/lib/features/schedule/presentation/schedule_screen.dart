@@ -66,7 +66,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0038A8).withOpacity(0.1),
+                        color: const Color(0xFF0038A8).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: const Color(0xFF0038A8), width: 1),
                       ),
@@ -290,7 +290,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF001F5C).withOpacity(0.06),
+                            color: const Color(0xFF001F5C).withValues(alpha: 0.06),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -616,7 +616,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF001F5C).withOpacity(0.06),
+                  color: const Color(0xFF001F5C).withValues(alpha: 0.06),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
@@ -654,8 +654,8 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
                     color: user.role == 'ADMIN'
-                        ? const Color(0xFFFFC107).withOpacity(0.2)
-                        : const Color(0xFF0038A8).withOpacity(0.1),
+                        ? const Color(0xFFFFC107).withValues(alpha: 0.2)
+                        : const Color(0xFF0038A8).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: user.role == 'ADMIN' ? const Color(0xFFFFC107) : const Color(0xFF0038A8),
@@ -773,7 +773,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         border: Border.all(color: const Color(0xFFE0E3E5)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF001F5C).withOpacity(0.04),
+            color: const Color(0xFF001F5C).withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -818,7 +818,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         ),
       ),
       selected: isSelected,
-      selectedTileColor: const Color(0xFF0038A8).withOpacity(0.08),
+      selectedTileColor: const Color(0xFF0038A8).withValues(alpha: 0.08),
       onTap: onTap,
     );
   }

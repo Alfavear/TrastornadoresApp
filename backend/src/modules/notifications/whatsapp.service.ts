@@ -15,10 +15,10 @@ export class WhatsappService {
     this.logger.log(`------------------------------------------------`);
     this.logger.log(message);
     this.logger.log(`================================================`);
-    
+
     // Simular latencia de red
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     return true; // Simular éxito
   }
 }

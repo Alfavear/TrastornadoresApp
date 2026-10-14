@@ -1,7 +1,7 @@
 ---
 description: Curador de la Bitacora. Actualiza Bitacora.md y AGENTS.md tras cada avance relevante del proyecto TrastornadoresApp.
 mode: subagent
-model: anthropic/claude-haiku-4-5
+model: opencode/mimo-v2.6-flash-free
 permission:
   edit: allow
   bash: ask

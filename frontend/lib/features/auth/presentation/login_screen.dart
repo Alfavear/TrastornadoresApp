@@ -15,7 +15,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   static const Color lightBackground = Color(0xFFF7F9FB);
   static const Color royalBlueDark = Color(0xFF001F5C);
   static const Color royalBlue = Color(0xFF0038A8);
-  static const Color goldAccent = Color(0xFFFFC107);
 
   // 0: Google, 1: Teléfono, 2: Correo
   int _selectedAuthMethod = 0;
@@ -61,7 +60,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF001F5C).withOpacity(0.06),
+                        color: const Color(0xFF001F5C).withValues(alpha: 0.06),
                         blurRadius: 20,
                         offset: const Offset(0, 6),
                       ),
@@ -138,7 +137,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                         onPressed: () {
-                          ref.read(currentUserProvider.notifier).state = UserProfile(
+                          ref.read(currentUserProvider.notifier).state = const UserProfile(
                             id: 'admin-google-123',
                             name: 'Líder Administrador',
                             email: 'admin@trastornadores.org',
@@ -189,7 +188,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             onPressed: () {
-              final partialProfile = UserProfile(
+              const partialProfile = UserProfile(
                 id: 'servidor-google-123',
                 name: 'Servidor Trastornador',
                 email: 'servidor@trastornadores.org',

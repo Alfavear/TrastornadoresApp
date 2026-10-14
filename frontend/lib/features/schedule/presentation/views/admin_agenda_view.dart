@@ -36,7 +36,7 @@ class AdminAgendaView extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF001F5C).withOpacity(0.04),
+                    color: const Color(0xFF001F5C).withValues(alpha: 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -136,7 +136,6 @@ class AdminAgendaView extends ConsumerWidget {
                             : Column(
                                 children: availableList.map((a) {
                                   final userName = a.user?.name ?? 'Servidor';
-                                  final userPhone = a.user?.email.contains('@') == false ? a.user?.email : null;
 
                                   return ListTile(
                                     dense: true,

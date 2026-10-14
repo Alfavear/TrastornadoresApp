@@ -42,8 +42,8 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 3.7 Notificaciones WhatsApp desde el backend
 - [x] 3.8 Branding institucional (logo, colores, app bar)
 - [x] 3.9 **Bearer token real de Firebase en cada petición** (interceptor en `dioProvider`)
-- [ ] 3.10 `flutter analyze` en verde
-- [ ] 3.11 Tests de widget para pantallas críticas
+- [x] 3.10 `flutter analyze` en verde
+- [x] 3.11 Tests de widget para pantallas críticas
 - [ ] 3.12 Build Android release (smoke)
 - [ ] 3.13 Manejo de sesión expirada (interceptor 401 → login)
 
@@ -78,9 +78,9 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 7.1 Backend: lint 0 errores, build correcto
 - [x] 7.2 Backend: 25/25 tests en 5 suites
 - [x] 7.3 Modelos Freezed/JSON generados y versionados
-- [ ] 7.4 `flutter analyze` en verde
-- [ ] 7.5 `flutter test` en verde
-- [ ] 7.6 Smoke test: login → votar → ver en vista admin
+- [x] 7.4 `flutter analyze` en verde
+- [x] 7.5 `flutter test` en verde
+- [x] 7.6 Smoke test: login → votar → ver en vista admin
 
 ## 8. Release MVP
 - [ ] 8.1 `.gitignore` auditado (sin secretos ni artefactos)

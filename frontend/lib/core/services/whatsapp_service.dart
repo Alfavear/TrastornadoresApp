@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
 
 class WhatsAppService {
   /// Abre WhatsApp directamente en Web (vía window.open) o en App Móvil
@@ -16,7 +15,7 @@ class WhatsAppService {
 
     try {
       if (kIsWeb) {
-        html.window.open(urlString, '_blank');
+        web.window.open(urlString, '_blank');
         return true;
       } else {
         final uri = Uri.parse(urlString);
@@ -29,7 +28,7 @@ class WhatsAppService {
     } catch (e) {
       debugPrint('Error abriendo WhatsApp: $e');
       if (kIsWeb) {
-        html.window.open(urlString, '_blank');
+        web.window.open(urlString, '_blank');
         return true;
       }
       return false;

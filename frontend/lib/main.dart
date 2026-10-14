@@ -53,7 +53,6 @@ class TrastornadoresApp extends ConsumerWidget {
           primary: royalBlue,
           secondary: goldAccent,
           surface: Colors.white,
-          background: lightBackground,
         ),
         scaffoldBackgroundColor: lightBackground,
         appBarTheme: const AppBarTheme(
@@ -71,7 +70,7 @@ class TrastornadoresApp extends ConsumerWidget {
         cardTheme: CardThemeData(
           color: Colors.white,
           elevation: 2,
-          shadowColor: const Color(0xFF001F5C).withOpacity(0.06),
+          shadowColor: const Color(0xFF001F5C).withValues(alpha: 0.06),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: const BorderSide(color: Color(0xFFE0E3E5), width: 1),

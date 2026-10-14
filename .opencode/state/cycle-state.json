@@ -1,0 +1,43 @@
+{
+    "cycles":  {
+                   "continuous-verification":  {
+                                                   "consecutiveFailures":  0,
+                                                   "lastResult":  null,
+                                                   "intervalMinutes":  5,
+                                                   "lastRun":  null,
+                                                   "enabled":  true
+                                               },
+                   "roadmap-driven":  {
+                                          "lastRun":  null,
+                                          "intervalMinutes":  30,
+                                          "lastResult":  null,
+                                          "nextItemIndex":  0,
+                                          "completedItems":  [
+
+                                                             ],
+                                          "enabled":  true
+                                      },
+                   "collaborative-agents":  {
+                                                "lastRun":  null,
+                                                "currentPhase":  "idle",
+                                                "intervalMinutes":  15,
+                                                "workItem":  null,
+                                                "lastResult":  null,
+                                                "enabled":  true
+                                            },
+                   "security-continuous":  {
+                                               "scanScope":  "full",
+                                               "lastResult":  null,
+                                               "intervalMinutes":  10,
+                                               "lastRun":  null,
+                                               "enabled":  true
+                                           }
+               },
+    "version":  1,
+    "lastRun":  null,
+    "global":  {
+                   "pid":  null,
+                   "running":  false,
+                   "startTime":  null
+               }
+}

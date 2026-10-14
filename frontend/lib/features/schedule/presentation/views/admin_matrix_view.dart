@@ -78,7 +78,7 @@ class _AdminMatrixViewState extends ConsumerState<AdminMatrixView> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.indigo.shade50),
+                        headingRowColor: WidgetStateProperty.all(Colors.indigo.shade50),
                         columns: [
                           const DataColumn(
                             label: Text(

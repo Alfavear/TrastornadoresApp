@@ -152,12 +152,14 @@ export class ScheduleService {
       month: 'long',
     });
     const dateStr = formatter.format(scheduleDate.date);
-    
+
     // Lista de usuarios que van a servir ese día
-    const participants = scheduleDate.availabilities.map(a => a.user.name).join(', ');
+    const participants = scheduleDate.availabilities
+      .map((a) => a.user.name)
+      .join(', ');
 
     let notificationsSent = 0;
-    
+
     // Enviar a cada uno de los confirmados
     for (const availability of scheduleDate.availabilities) {
       const user = availability.user;
@@ -177,12 +179,15 @@ export class ScheduleService {
   async notifyReminder(userId: string, dateId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
-    if (!user.phone) throw new BadRequestException('El usuario no tiene un número de teléfono registrado');
+    if (!user.phone)
+      throw new BadRequestException(
+        'El usuario no tiene un número de teléfono registrado',
+      );
 
     const scheduleDate = await this.prisma.scheduleDate.findUnique({
-      where: { id: dateId }
+      where: { id: dateId },
     });
-    
+
     if (!scheduleDate) throw new NotFoundException('Fecha no encontrada');
 
     const formatter = new Intl.DateTimeFormat('es-ES', {
@@ -191,11 +196,11 @@ export class ScheduleService {
       month: 'long',
     });
     const dateStr = formatter.format(scheduleDate.date);
-    
+
     const message = `¡Hola ${user.name}!\n\nTe recordamos que tienes el privilegio de servir el día:\n📅 *${dateStr}*\n\nPor favor, confirma tu asistencia en la aplicación si aún no lo has hecho.`;
-    
+
     await this.whatsappService.sendMessage(user.phone, message);
-    
+
     return {
       message: `Recordatorio enviado exitosamente a ${user.name}`,
     };

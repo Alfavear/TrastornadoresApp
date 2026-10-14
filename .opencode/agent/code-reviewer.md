@@ -1,7 +1,7 @@
 ---
 description: Revisor de código. Verifica que los cambios respeten las convenciones, la Clean Architecture y la Bitacora del proyecto. No modifica código.
 mode: subagent
-model: anthropic/claude-sonnet-4-5
+model: opencode/space-bunny-free
 permission:
   edit: deny
 ---

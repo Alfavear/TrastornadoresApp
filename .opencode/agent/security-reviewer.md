@@ -1,7 +1,7 @@
 ---
 description: Revisor de seguridad. Audita autenticación, manejo de secretos, validación de entradas y OWASP en el backend/frontend de TrastornadoresApp. No modifica código.
 mode: subagent
-model: anthropic/claude-opus-4-5
+model: opencode/nemotron-3-ultra-free
 permission:
   edit: deny
   bash: ask
