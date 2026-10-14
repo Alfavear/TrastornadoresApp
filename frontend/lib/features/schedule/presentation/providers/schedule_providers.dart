@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/schedule_repository.dart';
 import '../../domain/models/schedule_model.dart';
+import '../../../auth/presentation/providers/user_provider.dart';
 
 /// Token de respaldo para desarrollo.
 ///
@@ -37,6 +38,18 @@ final dioProvider = Provider<Dio>((ref) {
 
       options.headers['Authorization'] = 'Bearer ${token ?? _devFallbackToken}';
       handler.next(options);
+    },
+    onError: (error, handler) {
+      // 401 = sesion expirada o token invalido: marcar expiracion para
+      // que el router redirija a /login (ver resolveRedirect).
+      if (error.response?.statusCode == 401) {
+        try {
+          ref.read(sessionExpiredProvider.notifier).state = true;
+        } catch (_) {
+          // ref fuera de contexto en tests: ignorar.
+        }
+      }
+      handler.next(error);
     },
   ));
 

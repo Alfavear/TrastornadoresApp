@@ -327,3 +327,18 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - `schedule.controller.ts`: `@Throttle({ default: { limit: 10, ttl: 60_000 } })` en `notify/group`, `{ limit: 20 }` en `notify/reminder` (anti-spam WhatsApp).
 - Tests: nuevo `app.module.spec.ts` (4: constantes, imports, metadata LIMIT 10/20 + TTL). Backend 73→77 tests, lint 0, build OK.
 - **ROADMAP**: 2.11 marcado `[x]`; siguiente 2.12 CORS restringido por ambiente.
+
+### 39. Loop hardening 2.12-2.14 + 4.5 (13/10/2026)
+- **2.12 CORS**: nuevo `src/config/cors.config.ts` (`buildCorsOptions`). Dev `origin:true`, staging allowlist o defaults, prod solo `CORS_ORIGINS` (vacío=denegar). `main.ts` usa la función. Tests `cors.config.spec.ts` (4).
+- **2.13 Swagger**: nuevo `src/config/swagger.config.ts` (`shouldEnableSwagger`). Dev/staging siempre, prod solo con `ENABLE_SWAGGER=true`. `main.ts` condiciona `SwaggerModule.setup`. Tests `swagger.config.spec.ts` (4).
+- **2.14 Logging**: nuevo `src/core/logging/logging.interceptor.ts` global (`APP_INTERCEPTOR`). Texto en dev, JSON con method/url/uid/duration en prod; no rompe stream en error. Tests (3).
+- **4.5 Bootstrap**: `isBootstrapAdmin(uid, email?)` acepta `ADMIN_UIDS` + `ADMIN_EMAILS` (case-insensitive). `syncUser` y `FirebaseAuthGuard` pasan email. Tests: email-allowlist + elevación por email.
+- Backend 77→90 tests (14 suites), lint 0, build OK.
+- **ROADMAP**: 2.12, 2.13, 2.14, 4.5 marcados `[x]`; siguiente 3.13 interceptor 401, 3.12 build Android, 6.5 README.
+
+### 40. Loop 3.13 sesión expirada 401→login (13/10/2026)
+- `user_provider.dart`: nuevo `sessionExpiredProvider` + `resolveRedirect({user, sessionExpired, location})` pura + `consumeSessionExpired`.
+- `schedule_providers.dart`: `dioProvider` agrega `onError` que marca `sessionExpired=true` en 401 (try/catch para tests).
+- `app_router.dart`: `redirect` usa `resolveRedirect` (401→`/login` prima sobre rol; `/admin` no-ADMIN→`/schedule`).
+- Tests: `user_provider_test` +6 (401→login, ya-en-login, rol, provider flag). Frontend 55→61 tests, `flutter analyze` 0 issues.
+- **ROADMAP**: 3.13 marcado `[x]`; siguiente 6.5 README raíz, 8.1 `.gitignore` auditado, 3.12 build Android.

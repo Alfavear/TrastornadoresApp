@@ -40,14 +40,15 @@ export class FirebaseAuthGuard implements CanActivate {
         decodedToken.uid,
       );
 
+      const email = decodedToken.email ?? dbUser?.email ?? undefined;
       request.user = {
         uid: decodedToken.uid,
-        email: decodedToken.email ?? dbUser?.email ?? undefined,
+        email,
         name: decodedToken.name ?? dbUser?.name ?? undefined,
         photoUrl: decodedToken.picture ?? dbUser?.photoUrl ?? undefined,
         role:
           dbUser?.role ??
-          (this.usersService.isBootstrapAdmin(decodedToken.uid)
+          (this.usersService.isBootstrapAdmin(decodedToken.uid, email)
             ? UserRole.ADMIN
             : UserRole.PARTICIPANT),
       };
@@ -59,7 +60,7 @@ export class FirebaseAuthGuard implements CanActivate {
       // Modo desarrollo: sin credenciales de Firebase se usa un mock.
       request.user = {
         ...MOCK_USER,
-        role: this.usersService.isBootstrapAdmin(MOCK_USER.uid)
+        role: this.usersService.isBootstrapAdmin(MOCK_USER.uid, MOCK_USER.email)
           ? UserRole.ADMIN
           : UserRole.PARTICIPANT,
       };

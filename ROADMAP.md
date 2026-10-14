@@ -27,9 +27,9 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 2.9 DTOs con `class-validator` + Swagger
 - [x] 2.10 Carga de `.env` vía `ConfigModule`
 - [x] 2.11 Helmet + rate limiting (throttler)
-- [ ] 2.12 CORS restringido por ambiente
-- [ ] 2.13 Swagger protegido/deshabilitado en producción
-- [ ] 2.14 Logging estructurado
+- [x] 2.12 CORS restringido por ambiente
+- [x] 2.13 Swagger protegido/deshabilitado en producción
+- [x] 2.14 Logging estructurado
 - [ ] 2.15 Migraciones de Prisma en CI (`prisma migrate deploy`)
 
 ## 3. Frontend Flutter
@@ -45,14 +45,14 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 3.10 `flutter analyze` en verde
 - [x] 3.11 Tests de widget para pantallas críticas
 - [ ] 3.12 Build Android release (smoke)
-- [ ] 3.13 Manejo de sesión expirada (interceptor 401 → login)
+- [x] 3.13 Manejo de sesión expirada (interceptor 401 → login)
 
 ## 4. Seguridad
 - [x] 4.1 Guard con verificación real de token + fallback mock
 - [x] 4.2 RBAC por rol (ADMIN / PARTICIPANT)
 - [x] 4.3 Secretos fuera del repositorio (`.gitignore`)
 - [x] 4.4 Validación global con `whitelist` + `transform`
-- [ ] 4.5 Bootstrap admin protegido (allowlist por UID/email)
+- [x] 4.5 Bootstrap admin protegido (allowlist por UID/email)
 - [ ] 4.6 Rotación de secretos documentada
 - [ ] 4.7 Auditoría con `/revisar-seguridad` y cierre de hallazgos
 

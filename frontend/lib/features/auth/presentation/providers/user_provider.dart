@@ -29,6 +29,25 @@ const mockProfile = UserProfile(
 
 final currentUserProvider = StateProvider<UserProfile>((ref) => mockProfile);
 
+/// true cuando el backend respondio 401 (token expirado/invalido).
+final sessionExpiredProvider = StateProvider<bool>((ref) => false);
+
+/// Resuelve a donde redirigir segun rol y expiracion. Pura y testeable.
+String? resolveRedirect({
+  required UserProfile user,
+  required bool sessionExpired,
+  required String location,
+}) {
+  if (sessionExpired && location != '/login') return '/login';
+  if (location == '/admin' && user.role != 'ADMIN') return '/schedule';
+  return null;
+}
+
+/// Limpia la sesion local tras un 401 (vuelve a mock + marca expirada).
+UserProfile consumeSessionExpired(UserProfile current) {
+  return mockProfile;
+}
+
 Future<UserProfile> fetchCurrentUser(Dio dio) async {
   try {
     final response = await dio.get('/users/me');

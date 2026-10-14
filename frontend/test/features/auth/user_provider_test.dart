@@ -107,4 +107,68 @@ void main() {
       expect(profile, mockProfile);
     });
   });
+
+  group('resolveRedirect (3.13 sesion expirada)', () {
+    const admin = UserProfile(
+        id: 'a', name: 'A', email: 'a@test.com', role: 'ADMIN');
+    const participant = UserProfile(
+        id: 'p', name: 'P', email: 'p@test.com', role: 'PARTICIPANT');
+
+    test('401 redirige a /login desde cualquier ruta', () {
+      expect(
+        resolveRedirect(
+            user: participant, sessionExpired: true, location: '/schedule'),
+        '/login',
+      );
+      expect(
+        resolveRedirect(
+            user: admin, sessionExpired: true, location: '/admin'),
+        '/login',
+      );
+    });
+
+    test('no redirige si ya esta en /login', () {
+      expect(
+        resolveRedirect(
+            user: participant, sessionExpired: true, location: '/login'),
+        isNull,
+      );
+    });
+
+    test('no-admin a /admin va a /schedule', () {
+      expect(
+        resolveRedirect(
+            user: participant,
+            sessionExpired: false,
+            location: '/admin'),
+        '/schedule',
+      );
+    });
+
+    test('admin a /admin no redirige', () {
+      expect(
+        resolveRedirect(
+            user: admin, sessionExpired: false, location: '/admin'),
+        isNull,
+      );
+    });
+
+    test('ruta normal sin expiracion no redirige', () {
+      expect(
+        resolveRedirect(
+            user: participant,
+            sessionExpired: false,
+            location: '/schedule'),
+        isNull,
+      );
+    });
+
+    test('sessionExpiredProvider inicia en false y se puede marcar', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      expect(container.read(sessionExpiredProvider), false);
+      container.read(sessionExpiredProvider.notifier).state = true;
+      expect(container.read(sessionExpiredProvider), true);
+    });
+  });
 }

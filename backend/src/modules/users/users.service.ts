@@ -7,16 +7,21 @@ import { AuthUser } from '../../core/auth/types/auth.types';
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  isBootstrapAdmin(firebaseUid: string): boolean {
-    return (process.env.ADMIN_UIDS ?? '')
+  isBootstrapAdmin(firebaseUid: string, email?: string): boolean {
+    const uids = (process.env.ADMIN_UIDS ?? '')
       .split(',')
       .map((uid) => uid.trim())
-      .filter(Boolean)
-      .includes(firebaseUid);
+      .filter(Boolean);
+    if (uids.includes(firebaseUid)) return true;
+    const emails = (process.env.ADMIN_EMAILS ?? '')
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean);
+    return !!email && emails.includes(email.toLowerCase());
   }
 
   async syncUser(user: AuthUser) {
-    const bootstrapAdmin = this.isBootstrapAdmin(user.uid);
+    const bootstrapAdmin = this.isBootstrapAdmin(user.uid, user.email);
 
     return this.prisma.user.upsert({
       where: { firebaseUid: user.uid },

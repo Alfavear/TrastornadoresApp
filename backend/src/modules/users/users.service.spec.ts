@@ -152,6 +152,35 @@ describe('UsersService', () => {
     expect(service.isBootstrapAdmin('no-uid')).toBe(false);
   });
 
+  it('isBootstrapAdmin debe aceptar email allowlist (case-insensitive)', () => {
+    process.env.ADMIN_UIDS = '';
+    process.env.ADMIN_EMAILS = 'Lider@Iglesia.org, otro@test.com';
+    expect(service.isBootstrapAdmin('cualquiera', 'lider@iglesia.org')).toBe(
+      true,
+    );
+    expect(service.isBootstrapAdmin('cualquiera', 'OTRO@TEST.COM')).toBe(true);
+    expect(service.isBootstrapAdmin('cualquiera', 'nadie@test.com')).toBe(
+      false,
+    );
+    expect(service.isBootstrapAdmin('cualquiera')).toBe(false);
+  });
+
+  it('syncUser eleva por email aunque el UID no este en lista', async () => {
+    process.env.ADMIN_UIDS = '';
+    process.env.ADMIN_EMAILS = 'jefe@test.com';
+    prismaMock.user.upsert.mockResolvedValue({ id: 'e1' });
+    await service.syncUser({
+      uid: 'uid-x',
+      email: 'JEFE@test.com',
+      role: 'PARTICIPANT',
+    });
+    expect(prismaMock.user.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ role: 'ADMIN' }),
+      }),
+    );
+  });
+
   it('isBootstrapAdmin debe ignorar espacios y vacios', () => {
     process.env.ADMIN_UIDS = ' a , ,b,, ';
     expect(service.isBootstrapAdmin('a')).toBe(true);

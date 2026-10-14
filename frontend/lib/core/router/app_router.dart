@@ -11,12 +11,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/login',
     redirect: (context, state) {
       final user = ref.read(currentUserProvider);
-      final isGoingToAdmin = state.matchedLocation == '/admin';
-
-      if (isGoingToAdmin && user.role != 'ADMIN') {
-        return '/schedule';
-      }
-      return null;
+      final expired = ref.read(sessionExpiredProvider);
+      return resolveRedirect(
+        user: user,
+        sessionExpired: expired,
+        location: state.matchedLocation,
+      );
     },
     routes: [
       GoRoute(

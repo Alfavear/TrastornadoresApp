@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './core/prisma/prisma.module';
 import { FirebaseModule } from './core/firebase/firebase.module';
@@ -8,6 +8,7 @@ import { AuthModule } from './core/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ScheduleModule } from './modules/schedule/schedule.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { LoggingInterceptor } from './core/logging/logging.interceptor';
 
 export const THROTTLE_TTL_MS = 60_000;
 export const THROTTLE_LIMIT_DEFAULT = 100;
@@ -33,6 +34,10 @@ export const THROTTLE_LIMIT_DEFAULT = 100;
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
     },
   ],
 })
