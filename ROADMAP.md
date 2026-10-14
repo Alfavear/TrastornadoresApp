@@ -63,7 +63,7 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 5.4 5 agentes con modelo y permisos asignados
 - [x] 5.5 5 skills (`trastornadores-dev` + 4 operativas)
 - [x] 5.6 7 comandos (`/check`, `/gen-models`, `/bitacora`, `/estado`, `/actualizar-bitacora`, `/nuevo-modulo`, `/revisar-seguridad`)
-- [ ] 5.7 Verificar que los MCPs inician (requiere `GITHUB_TOKEN` y `STITCH_API_KEY`)
+- [~] 5.7 Verificar que los MCPs inician (6/6 `connected` con env + OAuth; falta prueba funcional tras reiniciar OpenCode: stitch, github, postgres)
 - [x] 5.8 Ajustar `model:` de los agentes si el proveedor no es Anthropic
 
 ## 6. Documentación

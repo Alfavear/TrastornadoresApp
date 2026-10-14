@@ -165,6 +165,6 @@ Definidos en `.opencode/commands/`:
 
 - El MCP de Neon gestiona proyectos/bases en la nube de Neon; **no reemplaza** el PostgreSQL local de Docker definido en `docker-compose.yml`.
 - Mantener los secretos (firebase-service-account.json, google-services.json, API keys) fuera del control de versiones según `.gitignore`.
-- Variables de entorno requeridas por los MCPs: `GITHUB_TOKEN` (MCP GitHub) y `STITCH_API_KEY` (MCP Stitch). Sin ellas esos servidores fallarán al iniciar.
-- El MCP `postgres` apunta por defecto a la base local de desarrollo definida en `docker-compose.yml`.
+- Variables de entorno requeridas por los MCPs: `GITHUB_TOKEN` (MCP GitHub), `STITCH_API_KEY` (MCP Stitch) y `DATABASE_URL` (MCP `postgres`). Sin ellas esos servidores fallarán al iniciar o al ejecutar una tool. Alternativa a las API keys: OAuth guardada con `opencode mcp auth <server>` en `~/.local/share/opencode/mcp-auth.json` (hoy con `neon` y `stitch`).
+- El MCP `postgres` usa `{env:DATABASE_URL}` (14/10/2026): apunta a la base local de `docker-compose.yml` si esa variable define la URL local; en máquinas **sin Docker/WSL** se puede exportar en el scope `User` la URL de Neon (misma que `backend/.env`) y conecta a la nube.
 - La configuración de opencode **no se recarga en caliente**: reinicia opencode tras editar `opencode.json` o los archivos de `.opencode/`.

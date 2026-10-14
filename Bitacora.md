@@ -368,3 +368,29 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - **2.15**: CI agrega `prisma migrate deploy` solo en `main` con secreto `DATABASE_URL`.
 - **4.7**: nuevo `docs/SECURITY_AUDIT.md` (verificado OK + 2 críticas upstream documentadas como riesgo aceptado).
 - **ROADMAP**: 1.5, 2.15, 4.6, 4.7, 8.5 marcados `[x]`. Restan solo con dependencia externa: 3.12 `[~]` (entorno), 5.7 (tokens MCP), 8.3 (deploy real), 8.4 (firma Android).
+
+### 45. Loop 5.7 verificación de los 6 MCPs (14/10/2026)
+- **Comando de verificación**: `opencode mcp list` (6 servers) + prueba funcional real por server (`stitch.list_projects`, `postgres.query`, `playwright.browser_tabs`).
+- **Resultado (4/6 no funcionales → 5.7 queda `[~]`, no `[x]`)**:
+  - `playwright` ✓ conectado y funcional (abre `about:blank`).
+  - `filesystem` ✓ conectado **tras crear `C:\tmp\Trastornadores`** (antes: `MCP error -32000: Connection closed` porque el directorio raíz configurado no existía).
+  - `github` ✓ solo con `GITHUB_TOKEN` exportado en el proceso; sin él responde `SSE error 400`. Fuente disponible en la máquina: `gh auth token` (cuenta `Alfavear`, scopes `gist/read:org/repo`), pero **la variable no está persistida en el env** → hay que reexportarla y reiniciar opencode.
+  - `postgres` ✗ `authentication failed for user "postgres"`: `opencode.json` apunta a `localhost:5432` (Docker local) y **esta máquina no tiene Docker ni WSL instalados** (tampoco corre `scripts/dev-up.bat` ni el paso `compose` de 1.1).
+  - `stitch` ⚠ el transporte conecta pero el tool call falla: *"requires a login before it can register a client"* → `STITCH_API_KEY` **no está en el env** de esta sesión (pese a reportarse presente).
+  - `neon` ⚠ `needs authentication` (OAuth pendiente: `opencode mcp auth neon`).
+- **Decisiones**: (a) no se cambia `opencode.json` para apuntar `postgres` a Neon — introduciría credenciales en el config; (b) el directorio `C:\tmp\Trastornadores` queda creado como prerequisito documentado del MCP filesystem.
+- **Nota de seguridad (4.6)**: al volcar `backend/.env` en consola quedó expuesta la credencial de `DATABASE_URL` (Neon) en claro en el log de esta sesión. El archivo sigue gitignorado (OK 4.3), pero conviene **rotarla en Neon** siguiendo `docs/DEPLOY.md`.
+- **ROADMAP**: 5.7 marcado `[~]`; sin cambios de código (worktree limpio, sin archivos modificados). Restan: 3.12 `[~]` (entorno), 5.7 `[~]` (tokens/Docker/OAuth), 8.3, 8.4.
+
+### 46. Loop 5.7 remediación MCP: tokens, OAuth y config (14/10/2026)
+- **Causas raíz** (sumadas a §45): (1) `GITHUB_TOKEN` y `STITCH_API_KEY` no existían en ningún scope de env (Process/User/Machine); (2) `C:\tmp\Trastornadores` no existía; (3) `opencode.json` apuntaba `postgres` a `localhost:5432` y la máquina **no tiene Docker ni WSL**.
+- **Remediación aplicada**:
+  - `GITHUB_TOKEN` persistido en scope `User` desde `gh auth token` (cuenta `Alfavear`) y `DATABASE_URL` en scope `User` desde `backend/.env`; en ambos casos sin imprimir el valor en la salida.
+  - `opencode mcp auth neon` y `opencode mcp auth stitch` → OAuth guardados en `~/.local/share/opencode/mcp-auth.json` (claves `neon`, `stitch`).
+  - `opencode.json`: el comando del MCP `postgres` pasa de la URL hardcodeada de `localhost` a `{env:DATABASE_URL}` (decisión: **no** meter credenciales en el config; el config sigue sin secretos).
+  - Directorio `C:\tmp\Trastornadores` creado (prerequisito del MCP `filesystem`).
+  - `OPENCODE.md` §Notas actualizado: env requeridas por los MCP (`GITHUB_TOKEN`, `STITCH_API_KEY`, `DATABASE_URL`), OAuth con `opencode mcp auth` y el nuevo `{env:DATABASE_URL}` de `postgres`.
+- **Verificación ejecutada**: `opencode mcp list` con las variables del alcance correcto → **6/6 `connected`** (neon, stitch, github, postgres, filesystem, playwright). Conectividad de la BD con Prisma (`select current_database(), current_user`) → `TrastornadoresApp` / `neondb_owner`.
+- **Pendiente tras reinicio**: la sesión en curso nació antes de los cambios, así que en *esta* sesión `github` sigue en `400`, `stitch` responde *"requires a login"* y `postgres` no hereda la env. Tras reiniciar OpenCode: probar `stitch.list_projects`, una tool de `github` y una query al MCP `postgres`; si responden, 5.7 pasa a `[x]`.
+- **Seguridad (4.6)**: recordar la rotación de la credencial Neon volcada en consola en §45.
+- **ROADMAP**: 5.7 sigue `[~]` (6/6 inician; falta la prueba funcional post-reinicio).
