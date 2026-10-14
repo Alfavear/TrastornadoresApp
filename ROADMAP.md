@@ -11,8 +11,8 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 ## 1. Infraestructura
 - [ ] 1.1 Levantar stack completo con un solo comando (docker compose + scripts)
 - [ ] 1.2 `.env.example` documentado por ambiente (dev/staging/prod)
-- [ ] 1.3 Dockerfile del backend
-- [ ] 1.4 Pipeline CI (lint + build + test) en GitHub Actions
+- [x] 1.3 Dockerfile del backend
+- [x] 1.4 Pipeline CI (lint + build + test) en GitHub Actions
 - [ ] 1.5 Estrategia de despliegue del backend
 
 ## 2. Backend NestJS

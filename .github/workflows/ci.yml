@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - working-directory: backend
+        run: |
+          npm ci
+          npx prisma generate
+          npm run lint
+          npm run build
+          npm test
+      - name: Prisma migrate (solo valida sintaxis en CI)
+        working-directory: backend
+        run: npx prisma validate
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - working-directory: frontend
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test

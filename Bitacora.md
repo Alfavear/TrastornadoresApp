@@ -350,3 +350,8 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - **8.2 Envs**: nuevo `backend/.env.example` (DATABASE_URL, PORT, NODE_ENV, FIREBASE path, ADMIN_UIDS/EMAILS, CORS_ORIGINS, ENABLE_SWAGGER).
 - Verificación: backend lint 0/build/90 tests, frontend analyze 0.
 - **ROADMAP**: 6.5, 6.6, 8.1, 8.2 marcados `[x]`; siguiente 3.12 build Android smoke, 1.x infra, 5.7/5.8, 8.3–8.5.
+
+### 42. Loop infra Dockerfile + CI (13/10/2026)
+- **1.3 Dockerfile**: multi-stage (deps/build/runner), non-root `app`, `prisma generate`, `EXPOSE 3000`, `node dist/main`. Validado con `prisma validate` OK.
+- **1.4 CI**: `.github/workflows/ci.yml` (backend: ci+generate+lint+build+test+validate; frontend: pub get+analyze+test). `permissions: contents:read`.
+- **ROADMAP**: 1.3, 1.4 marcados `[x]`; siguiente 3.12 Android smoke, 1.1/1.2/1.5, 5.7/5.8, 8.3–8.5.
