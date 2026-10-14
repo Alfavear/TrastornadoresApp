@@ -71,8 +71,8 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 6.2 `.agents/AGENTS.md` con reglas
 - [x] 6.3 `OPENCODE.md` con configuración de opencode
 - [x] 6.4 `ROADMAP.md` (este archivo)
-- [ ] 6.5 `README.md` raíz con setup rápido para el equipo
-- [ ] 6.6 Documentar modelo de datos y flujo de roles
+- [x] 6.5 `README.md` raíz con setup rápido para el equipo
+- [x] 6.6 Documentar modelo de datos y flujo de roles
 
 ## 7. Verificación
 - [x] 7.1 Backend: lint 0 errores, build correcto
@@ -83,8 +83,8 @@ Hoja de ruta del proyecto. Cada ítem marca su estado: `[ ]` pendiente, `[~]` en
 - [x] 7.6 Smoke test: login → votar → ver en vista admin
 
 ## 8. Release MVP
-- [ ] 8.1 `.gitignore` auditado (sin secretos ni artefactos)
-- [ ] 8.2 Variables de entorno documentadas por ambiente
+- [x] 8.1 `.gitignore` auditado (sin secretos ni artefactos)
+- [x] 8.2 Variables de entorno documentadas por ambiente
 - [ ] 8.3 Backend desplegado
 - [ ] 8.4 App Android firmada y distribuida
 - [ ] 8.5 Plan de respaldos de la base de datos

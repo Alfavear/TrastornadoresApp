@@ -342,3 +342,11 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
 - `app_router.dart`: `redirect` usa `resolveRedirect` (401→`/login` prima sobre rol; `/admin` no-ADMIN→`/schedule`).
 - Tests: `user_provider_test` +6 (401→login, ya-en-login, rol, provider flag). Frontend 55→61 tests, `flutter analyze` 0 issues.
 - **ROADMAP**: 3.13 marcado `[x]`; siguiente 6.5 README raíz, 8.1 `.gitignore` auditado, 3.12 build Android.
+
+### 41. Loop docs + gitignore (13/10/2026)
+- **6.5 README raíz**: nuevo `README.md` (stack, setup 5 min, envs, seguridad, estado).
+- **6.6 Modelo de datos**: nuevo `docs/DATA_MODEL.md` (diagrama, tablas, flujo roles, 4 reglas críticas).
+- **8.1 `.gitignore` auditado**: +`*.log`, `coverage/`, `.flutter-plugins-dependencies`, `.opencode/state/logs/`, `.pm2/`, `.DS_Store`; verificado `git check-ignore` para `.env`/`firebase`/`google-services` y `git log --all` sin secretos en historial.
+- **8.2 Envs**: nuevo `backend/.env.example` (DATABASE_URL, PORT, NODE_ENV, FIREBASE path, ADMIN_UIDS/EMAILS, CORS_ORIGINS, ENABLE_SWAGGER).
+- Verificación: backend lint 0/build/90 tests, frontend analyze 0.
+- **ROADMAP**: 6.5, 6.6, 8.1, 8.2 marcados `[x]`; siguiente 3.12 build Android smoke, 1.x infra, 5.7/5.8, 8.3–8.5.

@@ -1,12 +1,17 @@
 node_modules/
 .env
+.env.local
 firebase-service-account.json
+*.log
+coverage/
 
 # Backend
 backend/node_modules/
 backend/dist/
 backend/.env
+backend/.env.local
 backend/firebase-service-account.json
+backend/coverage/
 
 # Frontend
 frontend/.dart_tool/
@@ -15,3 +20,13 @@ frontend/build/
 frontend/.pub-cache/
 frontend/.pub/
 frontend/android/app/google-services.json
+frontend/.flutter-plugins-dependencies
+
+# OpenCode ciclos (logs locales, estado efimero)
+.opencode/state/logs/
+.opencode/state/*.log
+
+# PM2 / OS
+.pm2/
+.DS_Store
+Thumbs.db
