@@ -403,3 +403,12 @@ Este documento registra los avances, decisiones técnicas y configuraciones real
   4. `postgres` → sin tool en el catálogo Code Mode; validación equivalente vía Prisma (`$queryRawUnsafe('select current_database()')` con `DATABASE_URL` de scope `User`) → `[{"current_database":"TrastornadoresApp"}]` OK. En proceso actual falla por `DATABASE_URL` ausente (se resuelve con el reinicio).
 - **Seguridad (4.6)**: en esta sesión volvieron a quedar expuestos en logs el `GITHUB_TOKEN` (`reg query`) y la `DATABASE_URL` completa (salida de `opencode mcp list` con la URL expandida). Reitero: **rotar ambas credenciales** (Neon + token `gho_`) siguiendo `docs/DEPLOY.md`, y en adelante verificar solo longitudes/prefijos, nunca valores.
 - **ROADMAP**: 5.7 sigue `[~]`. Para cerrarlo tras el reinicio real de la app: `opencode mcp list` 6/6 en proceso limpio + `stitch.list_projects` sin error de login (requiere la API key u OAuth válido).
+
+### 48. Loop 5.7 verificación tras reinicio real de OpenCode (14/10/2026)
+- **Checklist ejecutado en proceso limpio** (el reinicio sí ocurrió: `proc env` ya hereda `GITHUB_TOKEN` y `DATABASE_URL` de scope `User`):
+  1. `opencode mcp list` → **6/6 `connected`** ✓ (neon, stitch-transporte, github, postgres, filesystem, playwright).
+  2. `stitch.list_projects` (Code Mode) → **FALLA**: *"requires a login before it can register a client"*. `STITCH_API_KEY` sigue ausente en todos los scopes y `mcp-auth.json` trae `stitch: {}`. Hipótesis de §46-47 refutada: quitar el header no autenticaría; falta credencial real (API key u OAuth válido).
+  3. `github.get_me` (Code Mode) → **OK** ✓ (`login: Alfavear`).
+  4. `postgres.query select current_database()` (Code Mode) → **OK** ✓ (`TrastornadoresApp`).
+- **Resultado: 3/4**. 5.7 sigue `[~]` solo por Stitch. Acción requerida del usuario: proveer `STITCH_API_KEY` (Google AI Studio / Cloud console) para persistirla en scope `User`, o completar `opencode mcp auth stitch` en sesión interactiva.
+- **Seguridad (4.6)**: la salida de `opencode mcp list` vuelve a expandir la `DATABASE_URL` completa en el log. Reitero rotación de credencial Neon + token `gho_` según `docs/DEPLOY.md`.
